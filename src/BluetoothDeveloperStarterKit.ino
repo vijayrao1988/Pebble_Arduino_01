@@ -1,6 +1,7 @@
 //#include <Power.h>
 //#include <wsrc.h>
 #include <Bounce2.h>
+#include <TimeLib.h>
 
 /*
  * Author: Vijay Rao
@@ -15,6 +16,8 @@
 #define solenoidN 7
 #define button 2
 #define flowSensor 4
+
+timeDayOfWeek_t alarmDay[7] = {dowSunday, dowMonday, dowTuesday, dowWednesday, dowThursday, dowFriday, dowSaturday};
 
 
 #include <CurieBLE.h>
@@ -488,10 +491,12 @@ void loop() {
          digitalWrite(13, LOW);
          delay(50);              // wait for a second
 
-         Serial.println(CurrentTimeService_CurrentTime.valueLength());
-         sprintf(AttributeValue,"%c",NULL);
-         strncpy(AttributeValue,(char*)CurrentTimeService_CurrentTime.value(),CurrentTimeService_CurrentTime.valueLength());
-         Serial.println(AttributeValue);
+         uint16_t copyingIndex;
+         for(copyingIndex = 0; copyingIndex<CurrentTimeService_CurrentTime.valueLength(); copyingIndex++)
+         {
+           AttributeValue[copyingIndex] = CurrentTimeService_CurrentTime.value()[copyingIndex];
+         }
+         AttributeValue[copyingIndex] = NULL;
 
          Serial.println("CurrentTimeService_CurrentTime.written()");
          Serial.print(AttributeValue[0], HEX);
@@ -533,10 +538,12 @@ void loop() {
         ////////////////////
         if (PotsService_Pots.written()) {
         // application logic for handling WRITE or WRITE_WITHOUT_RESPONSE on characteristic Pots goes here
-         Serial.println(PotsService_Pots.valueLength());
-         sprintf(AttributeValue,"%c",NULL);
-         strncpy(AttributeValue,(char*)PotsService_Pots.value(),PotsService_Pots.valueLength());
-         Serial.println(AttributeValue);
+         uint16_t copyingIndex;
+         for(copyingIndex = 0; copyingIndex<PotsService_Pots.valueLength(); copyingIndex++)
+         {
+           AttributeValue[copyingIndex] = PotsService_Pots.value()[copyingIndex];
+         }
+         AttributeValue[copyingIndex] = NULL;
 
          Serial.println("PotsService_Pots.written()");
          Serial.print(AttributeValue[0], HEX);
@@ -554,10 +561,12 @@ void loop() {
         ////////////////////
         if (ValveControllerService_Command.written()) {
         // application logic for handling WRITE or WRITE_WITHOUT_RESPONSE on characteristic Pots goes here
-         Serial.println(ValveControllerService_Command.valueLength());
-         sprintf(AttributeValue,"%c",NULL);
-         strncpy(AttributeValue,(char*)ValveControllerService_Command.value(),ValveControllerService_Command.valueLength());
-         Serial.println(AttributeValue);
+         uint16_t copyingIndex;
+         for(copyingIndex = 0; copyingIndex<ValveControllerService_Command.valueLength(); copyingIndex++)
+         {
+           AttributeValue[copyingIndex] = ValveControllerService_Command.value()[copyingIndex];
+         }
+         AttributeValue[copyingIndex] = NULL;
 
          Serial.println("ValveControllerService_Command.written()");
          switch(AttributeValue[0])
@@ -602,9 +611,14 @@ void loop() {
         ////////////////////
         if (TimePointService_NewPoint.written()) {
         // application logic for handling WRITE or WRITE_WITHOUT_RESPONSE on characteristic Current Time Service Current Time goes here
-         Serial.println(TimePointService_NewPoint.valueLength());
          sprintf(AttributeValue,"%c",NULL);
-         strncpy(AttributeValue,(char*)TimePointService_NewPoint.value(),TimePointService_NewPoint.valueLength());
+         uint16_t copyingIndex;
+         for(copyingIndex = 0; copyingIndex<TimePointService_NewPoint.valueLength(); copyingIndex++)
+         {
+           AttributeValue[copyingIndex] = TimePointService_NewPoint.value()[copyingIndex];
+         }
+         AttributeValue[copyingIndex] = NULL;
+         //strncpy(AttributeValue,(char*)TimePointService_NewPoint.value(),TimePointService_NewPoint.valueLength());
          Serial.println(AttributeValue);
 
          Serial.println("TimePointService_NewWateringTimePoint.written()");
@@ -643,342 +657,481 @@ void loop() {
           //set alarm as per time point index (1 - 32)
           switch(AttributeValue[0])
           {
-            case 1: //Sunday1
-              id[AttributeValue[0]-1] = Alarm.alarmRepeat(dowSunday, (int) AttributeValue[2], (int) AttributeValue[3], (int) AttributeValue[4], sessionAlarm0);
-              Serial.print("Setting Alarm - Sunday ");
+            case 1: //Alarm1
+              id[AttributeValue[0]-1] = Alarm.alarmRepeat(alarmDay[(int) AttributeValue[1] -1], (int) AttributeValue[2], (int) AttributeValue[3], (int) AttributeValue[4], sessionAlarm0);
+              Serial.print("Setting Alarm ");
+              Serial.println(alarmDay[(int) AttributeValue[1] -1], DEC);
               Serial.print(AttributeValue[2], DEC);
               Serial.print(":");
               Serial.print(AttributeValue[3], DEC);
               Serial.print(":");
               Serial.println(AttributeValue[4], DEC);
-              volume[AttributeValue[0]-1] = (AttributeValue[5]*128) + AttributeValue[6];
-              duration[AttributeValue[0]-1] = (AttributeValue[7]*128) + AttributeValue[8];
+              duration[AttributeValue[0]-1] = (AttributeValue[5]*128) + AttributeValue[6];
+              volume[AttributeValue[0]-1] = (AttributeValue[7]*128) + AttributeValue[8];
+              Serial.print("Volume : ");
+              Serial.print(volume[AttributeValue[0]-1]);
+              Serial.print("Duration : ");
+              Serial.println(duration[AttributeValue[0]-1]);
             break;
 
-            case 2: //Sunday2
-              id[AttributeValue[0]-1] = Alarm.alarmRepeat(dowSunday, (int) AttributeValue[2], (int) AttributeValue[3], (int) AttributeValue[4], sessionAlarm1);
-              Serial.print("Setting Alarm - Sunday ");
+            case 2: //Alarm2
+              id[AttributeValue[0]-1] = Alarm.alarmRepeat(alarmDay[(int) AttributeValue[1] -1], (int) AttributeValue[2], (int) AttributeValue[3], (int) AttributeValue[4], sessionAlarm1);
+              Serial.print("Setting Alarm ");
+              Serial.println(alarmDay[(int) AttributeValue[1] -1], DEC);
               Serial.print(AttributeValue[2], DEC);
               Serial.print(":");
               Serial.print(AttributeValue[3], DEC);
               Serial.print(":");
               Serial.println(AttributeValue[4], DEC);
-              volume[AttributeValue[0]-1] = (AttributeValue[5]*128) + AttributeValue[6];
-              duration[AttributeValue[0]-1] = (AttributeValue[7]*128) + AttributeValue[8];
+              duration[AttributeValue[0]-1] = (AttributeValue[5]*128) + AttributeValue[6];
+              volume[AttributeValue[0]-1] = (AttributeValue[7]*128) + AttributeValue[8];
+              Serial.print("Volume : ");
+              Serial.print(volume[AttributeValue[0]-1]);
+              Serial.print("Duration : ");
+              Serial.println(duration[AttributeValue[0]-1]);
             break;
 
-            case 3: //Sunday3
-              id[AttributeValue[0]-1] = Alarm.alarmRepeat(dowSunday, (int) AttributeValue[2], (int) AttributeValue[3], (int) AttributeValue[4], sessionAlarm2);
-              Serial.print("Setting Alarm - Sunday ");
-              Serial.println("Trial print");
+            case 3: //Alarm3
+              id[AttributeValue[0]-1] = Alarm.alarmRepeat(alarmDay[(int) AttributeValue[1] -1], (int) AttributeValue[2], (int) AttributeValue[3], (int) AttributeValue[4], sessionAlarm2);
+              Serial.print("Setting Alarm ");
+              Serial.println(alarmDay[(int) AttributeValue[1] -1], DEC);
               Serial.print(AttributeValue[2], DEC);
               Serial.print(":");
               Serial.print(AttributeValue[3], DEC);
               Serial.print(":");
               Serial.println(AttributeValue[4], DEC);
-              volume[AttributeValue[0]-1] = (AttributeValue[5]*128) + AttributeValue[6];
-              duration[AttributeValue[0]-1] = (AttributeValue[7]*128) + AttributeValue[8];
+              duration[AttributeValue[0]-1] = (AttributeValue[5]*128) + AttributeValue[6];
+              volume[AttributeValue[0]-1] = (AttributeValue[7]*128) + AttributeValue[8];
+              Serial.print("Volume : ");
+              Serial.print(volume[AttributeValue[0]-1]);
+              Serial.print("Duration : ");
+              Serial.println(duration[AttributeValue[0]-1]);
             break;
 
-            case 4: //Sunday4
-              id[AttributeValue[0]-1] = Alarm.alarmRepeat(dowSunday, (int) AttributeValue[2], (int) AttributeValue[3], (int) AttributeValue[4], sessionAlarm3);
-              Serial.print("Setting Alarm - Sunday ");
+            case 4: //Alarm4
+              id[AttributeValue[0]-1] = Alarm.alarmRepeat(alarmDay[(int) AttributeValue[1] -1], (int) AttributeValue[2], (int) AttributeValue[3], (int) AttributeValue[4], sessionAlarm3);
+              Serial.print("Setting Alarm ");
+              Serial.println(alarmDay[(int) AttributeValue[1] -1], DEC);
               Serial.print(AttributeValue[2], DEC);
               Serial.print(":");
               Serial.print(AttributeValue[3], DEC);
               Serial.print(":");
               Serial.println(AttributeValue[4], DEC);
-              volume[AttributeValue[0]-1] = (AttributeValue[5]*128) + AttributeValue[6];
-              duration[AttributeValue[0]-1] = (AttributeValue[7]*128) + AttributeValue[8];
+              duration[AttributeValue[0]-1] = (AttributeValue[5]*128) + AttributeValue[6];
+              volume[AttributeValue[0]-1] = (AttributeValue[7]*128) + AttributeValue[8];
+              Serial.print("Volume : ");
+              Serial.print(volume[AttributeValue[0]-1]);
+              Serial.print("Duration : ");
+              Serial.println(duration[AttributeValue[0]-1]);
             break;
 
 
-            case 5: //Monday1
-              id[AttributeValue[0]-1] = Alarm.alarmRepeat(dowMonday, (int) AttributeValue[2], (int) AttributeValue[3], (int) AttributeValue[4], sessionAlarm4);
-              Serial.print("Setting Alarm - Monday ");
+            case 5: //Alarm5
+              id[AttributeValue[0]-1] = Alarm.alarmRepeat(alarmDay[(int) AttributeValue[1] -1], (int) AttributeValue[2], (int) AttributeValue[3], (int) AttributeValue[4], sessionAlarm4);
+              Serial.print("Setting Alarm ");
+              Serial.println(alarmDay[(int) AttributeValue[1] -1], DEC);
               Serial.print(AttributeValue[2], DEC);
               Serial.print(":");
               Serial.print(AttributeValue[3], DEC);
               Serial.print(":");
               Serial.println(AttributeValue[4], DEC);
-              volume[AttributeValue[0]-1] = (AttributeValue[5]*128) + AttributeValue[6];
-              duration[AttributeValue[0]-1] = (AttributeValue[7]*128) + AttributeValue[8];
+              duration[AttributeValue[0]-1] = (AttributeValue[5]*128) + AttributeValue[6];
+              volume[AttributeValue[0]-1] = (AttributeValue[7]*128) + AttributeValue[8];
+              Serial.print("Volume : ");
+              Serial.print(volume[AttributeValue[0]-1]);
+              Serial.print("Duration : ");
+              Serial.println(duration[AttributeValue[0]-1]);
             break;
 
-            case 6: //Monday2
-              id[AttributeValue[0]-1] = Alarm.alarmRepeat(dowMonday, (int) AttributeValue[2], (int) AttributeValue[3], (int) AttributeValue[4], sessionAlarm5);
-              Serial.print("Setting Alarm - Monday ");
+            case 6: //Alarm6
+              id[AttributeValue[0]-1] = Alarm.alarmRepeat(alarmDay[(int) AttributeValue[1] -1], (int) AttributeValue[2], (int) AttributeValue[3], (int) AttributeValue[4], sessionAlarm5);
+              Serial.print("Setting Alarm ");
+              Serial.println(alarmDay[(int) AttributeValue[1] -1], DEC);
               Serial.print(AttributeValue[2], DEC);
               Serial.print(":");
               Serial.print(AttributeValue[3], DEC);
               Serial.print(":");
               Serial.println(AttributeValue[4], DEC);
-              volume[AttributeValue[0]-1] = (AttributeValue[5]*128) + AttributeValue[6];
-              duration[AttributeValue[0]-1] = (AttributeValue[7]*128) + AttributeValue[8];
+              duration[AttributeValue[0]-1] = (AttributeValue[5]*128) + AttributeValue[6];
+              volume[AttributeValue[0]-1] = (AttributeValue[7]*128) + AttributeValue[8];
+              Serial.print("Volume : ");
+              Serial.print(volume[AttributeValue[0]-1]);
+              Serial.print("Duration : ");
+              Serial.println(duration[AttributeValue[0]-1]);
             break;
 
-            case 7: //Monday3
-              id[AttributeValue[0]-1] = Alarm.alarmRepeat(dowMonday, (int) AttributeValue[2], (int) AttributeValue[3], (int) AttributeValue[4], sessionAlarm6);
-              Serial.print("Setting Alarm - Monday ");
+            case 7: //Alarm7
+              id[AttributeValue[0]-1] = Alarm.alarmRepeat(alarmDay[(int) AttributeValue[1] -1], (int) AttributeValue[2], (int) AttributeValue[3], (int) AttributeValue[4], sessionAlarm6);
+              Serial.print("Setting Alarm ");
+              Serial.println(alarmDay[(int) AttributeValue[1] -1], DEC);
               Serial.print(AttributeValue[2], DEC);
               Serial.print(":");
               Serial.print(AttributeValue[3], DEC);
               Serial.print(":");
               Serial.println(AttributeValue[4], DEC);
-              volume[AttributeValue[0]-1] = (AttributeValue[5]*128) + AttributeValue[6];
-              duration[AttributeValue[0]-1] = (AttributeValue[7]*128) + AttributeValue[8];
+              duration[AttributeValue[0]-1] = (AttributeValue[5]*128) + AttributeValue[6];
+              volume[AttributeValue[0]-1] = (AttributeValue[7]*128) + AttributeValue[8];
+              Serial.print("Volume : ");
+              Serial.print(volume[AttributeValue[0]-1]);
+              Serial.print("Duration : ");
+              Serial.println(duration[AttributeValue[0]-1]);
             break;
 
-            case 8: //Monday4
-              id[AttributeValue[0]-1] = Alarm.alarmRepeat(dowMonday, (int) AttributeValue[2], (int) AttributeValue[3], (int) AttributeValue[4], sessionAlarm7);
-              Serial.print("Setting Alarm - Monday ");
+            case 8: //Alarm8
+              id[AttributeValue[0]-1] = Alarm.alarmRepeat(alarmDay[(int) AttributeValue[1] -1], (int) AttributeValue[2], (int) AttributeValue[3], (int) AttributeValue[4], sessionAlarm7);
+              Serial.print("Setting Alarm ");
+              Serial.println(alarmDay[(int) AttributeValue[1] -1], DEC);
               Serial.print(AttributeValue[2], DEC);
               Serial.print(":");
               Serial.print(AttributeValue[3], DEC);
               Serial.print(":");
               Serial.println(AttributeValue[4], DEC);
-              volume[AttributeValue[0]-1] = (AttributeValue[5]*128) + AttributeValue[6];
-              duration[AttributeValue[0]-1] = (AttributeValue[7]*128) + AttributeValue[8];
+              duration[AttributeValue[0]-1] = (AttributeValue[5]*128) + AttributeValue[6];
+              volume[AttributeValue[0]-1] = (AttributeValue[7]*128) + AttributeValue[8];
+              Serial.print("Volume : ");
+              Serial.print(volume[AttributeValue[0]-1]);
+              Serial.print("Duration : ");
+              Serial.println(duration[AttributeValue[0]-1]);
             break;
 
-            case 9: //Tuesday1
-              id[AttributeValue[0]-1] = Alarm.alarmRepeat(dowTuesday, (int) AttributeValue[2], (int) AttributeValue[3], (int) AttributeValue[4], sessionAlarm8);
-              Serial.print("Setting Alarm - Tuesday ");
+            case 9: //Alarm9
+              id[AttributeValue[0]-1] = Alarm.alarmRepeat(alarmDay[(int) AttributeValue[1] -1], (int) AttributeValue[2], (int) AttributeValue[3], (int) AttributeValue[4], sessionAlarm8);
+              Serial.print("Setting Alarm ");
+              Serial.println(alarmDay[(int) AttributeValue[1] -1], DEC);
               Serial.print(AttributeValue[2], DEC);
               Serial.print(":");
               Serial.print(AttributeValue[3], DEC);
               Serial.print(":");
               Serial.println(AttributeValue[4], DEC);
-              volume[AttributeValue[0]-1] = (AttributeValue[5]*128) + AttributeValue[6];
-              duration[AttributeValue[0]-1] = (AttributeValue[7]*128) + AttributeValue[8];
+              duration[AttributeValue[0]-1] = (AttributeValue[5]*128) + AttributeValue[6];
+              volume[AttributeValue[0]-1] = (AttributeValue[7]*128) + AttributeValue[8];
+              Serial.print("Volume : ");
+              Serial.print(volume[AttributeValue[0]-1]);
+              Serial.print("Duration : ");
+              Serial.println(duration[AttributeValue[0]-1]);
             break;
 
-            case 10: //Tuesday2
-              id[AttributeValue[0]-1] = Alarm.alarmRepeat(dowTuesday, (int) AttributeValue[2], (int) AttributeValue[3], (int) AttributeValue[4], sessionAlarm9);
-              Serial.print("Setting Alarm - Tuesday ");
+            case 10: //Alarm10
+              id[AttributeValue[0]-1] = Alarm.alarmRepeat(alarmDay[(int) AttributeValue[1] -1], (int) AttributeValue[2], (int) AttributeValue[3], (int) AttributeValue[4], sessionAlarm9);
+              Serial.print("Setting Alarm ");
+              Serial.println(alarmDay[(int) AttributeValue[1] -1], DEC);
               Serial.print(AttributeValue[2], DEC);
               Serial.print(":");
               Serial.print(AttributeValue[3], DEC);
               Serial.print(":");
               Serial.println(AttributeValue[4], DEC);
-              volume[AttributeValue[0]-1] = (AttributeValue[5]*128) + AttributeValue[6];
-              duration[AttributeValue[0]-1] = (AttributeValue[7]*128) + AttributeValue[8];
+              duration[AttributeValue[0]-1] = (AttributeValue[5]*128) + AttributeValue[6];
+              volume[AttributeValue[0]-1] = (AttributeValue[7]*128) + AttributeValue[8];
+              Serial.print("Volume : ");
+              Serial.print(volume[AttributeValue[0]-1]);
+              Serial.print("Duration : ");
+              Serial.println(duration[AttributeValue[0]-1]);
             break;
 
-            case 11: //Tuesday3
-              id[AttributeValue[0]-1] = Alarm.alarmRepeat(dowTuesday, (int) AttributeValue[2], (int) AttributeValue[3], (int) AttributeValue[4], sessionAlarm10);
-              Serial.print("Setting Alarm - Tuesday ");
+            case 11: //Alarm11
+              id[AttributeValue[0]-1] = Alarm.alarmRepeat(alarmDay[(int) AttributeValue[1] -1], (int) AttributeValue[2], (int) AttributeValue[3], (int) AttributeValue[4], sessionAlarm10);
+              Serial.print("Setting Alarm ");
+              Serial.println(alarmDay[(int) AttributeValue[1] -1], DEC);
               Serial.print(AttributeValue[2], DEC);
               Serial.print(":");
               Serial.print(AttributeValue[3], DEC);
               Serial.print(":");
               Serial.println(AttributeValue[4], DEC);
-              volume[AttributeValue[0]-1] = (AttributeValue[5]*128) + AttributeValue[6];
-              duration[AttributeValue[0]-1] = (AttributeValue[7]*128) + AttributeValue[8];
+              duration[AttributeValue[0]-1] = (AttributeValue[5]*128) + AttributeValue[6];
+              volume[AttributeValue[0]-1] = (AttributeValue[7]*128) + AttributeValue[8];
+              Serial.print("Volume : ");
+              Serial.print(volume[AttributeValue[0]-1]);
+              Serial.print("Duration : ");
+              Serial.println(duration[AttributeValue[0]-1]);
             break;
 
-            case 12: //Tuesday4
-              id[AttributeValue[0]-1] = Alarm.alarmRepeat(dowTuesday, (int) AttributeValue[2], (int) AttributeValue[3], (int) AttributeValue[4], sessionAlarm11);
-              Serial.print("Setting Alarm - Tuesday ");
+            case 12: //Alarm12
+              id[AttributeValue[0]-1] = Alarm.alarmRepeat(alarmDay[(int) AttributeValue[1] -1], (int) AttributeValue[2], (int) AttributeValue[3], (int) AttributeValue[4], sessionAlarm11);
+              Serial.print("Setting Alarm ");
+              Serial.println(alarmDay[(int) AttributeValue[1] -1], DEC);
               Serial.print(AttributeValue[2], DEC);
               Serial.print(":");
               Serial.print(AttributeValue[3], DEC);
               Serial.print(":");
               Serial.println(AttributeValue[4], DEC);
-              volume[AttributeValue[0]-1] = (AttributeValue[5]*128) + AttributeValue[6];
-              duration[AttributeValue[0]-1] = (AttributeValue[7]*128) + AttributeValue[8];
+              duration[AttributeValue[0]-1] = (AttributeValue[5]*128) + AttributeValue[6];
+              volume[AttributeValue[0]-1] = (AttributeValue[7]*128) + AttributeValue[8];
+              Serial.print("Volume : ");
+              Serial.print(volume[AttributeValue[0]-1]);
+              Serial.print("Duration : ");
+              Serial.println(duration[AttributeValue[0]-1]);
             break;
 
-            case 13: //Wednesday1
-              id[AttributeValue[0]-1] = Alarm.alarmRepeat(dowWednesday, (int) AttributeValue[2], (int) AttributeValue[3], (int) AttributeValue[4], sessionAlarm12);
-              Serial.print("Setting Alarm - Wednesday ");
+            case 13: //Alarm13
+              id[AttributeValue[0]-1] = Alarm.alarmRepeat(alarmDay[(int) AttributeValue[1] -1], (int) AttributeValue[2], (int) AttributeValue[3], (int) AttributeValue[4], sessionAlarm12);
+              Serial.print("Setting Alarm ");
+              Serial.println(alarmDay[(int) AttributeValue[1] -1], DEC);
               Serial.print(AttributeValue[2], DEC);
               Serial.print(":");
               Serial.print(AttributeValue[3], DEC);
               Serial.print(":");
               Serial.println(AttributeValue[4], DEC);
-              volume[AttributeValue[0]-1] = (AttributeValue[5]*128) + AttributeValue[6];
-              duration[AttributeValue[0]-1] = (AttributeValue[7]*128) + AttributeValue[8];
+              duration[AttributeValue[0]-1] = (AttributeValue[5]*128) + AttributeValue[6];
+              volume[AttributeValue[0]-1] = (AttributeValue[7]*128) + AttributeValue[8];
+              Serial.print("Volume : ");
+              Serial.print(volume[AttributeValue[0]-1]);
+              Serial.print("Duration : ");
+              Serial.println(duration[AttributeValue[0]-1]);
             break;
 
-            case 14: //Wednesday2
-              id[AttributeValue[0]-1] = Alarm.alarmRepeat(dowWednesday, (int) AttributeValue[2], (int) AttributeValue[3], (int) AttributeValue[4], sessionAlarm13);
-              Serial.print("Setting Alarm - Wednesday ");
+            case 14: //Alarm14
+              id[AttributeValue[0]-1] = Alarm.alarmRepeat(alarmDay[(int) AttributeValue[1] -1], (int) AttributeValue[2], (int) AttributeValue[3], (int) AttributeValue[4], sessionAlarm13);
+              Serial.print("Setting Alarm ");
+              Serial.println(alarmDay[(int) AttributeValue[1] -1], DEC);
               Serial.print(AttributeValue[2], DEC);
               Serial.print(":");
               Serial.print(AttributeValue[3], DEC);
               Serial.print(":");
               Serial.println(AttributeValue[4], DEC);
-              volume[AttributeValue[0]-1] = (AttributeValue[5]*128) + AttributeValue[6];
-              duration[AttributeValue[0]-1] = (AttributeValue[7]*128) + AttributeValue[8];
+              duration[AttributeValue[0]-1] = (AttributeValue[5]*128) + AttributeValue[6];
+              volume[AttributeValue[0]-1] = (AttributeValue[7]*128) + AttributeValue[8];
+              Serial.print("Volume : ");
+              Serial.print(volume[AttributeValue[0]-1]);
+              Serial.print("Duration : ");
+              Serial.println(duration[AttributeValue[0]-1]);
             break;
 
-            case 15: //Wednesday3
-              id[AttributeValue[0]-1] = Alarm.alarmRepeat(dowWednesday, (int) AttributeValue[2], (int) AttributeValue[3], (int) AttributeValue[4], sessionAlarm14);
-              Serial.print("Setting Alarm - Wednesday ");
+            case 15: //Alarm15
+              id[AttributeValue[0]-1] = Alarm.alarmRepeat(alarmDay[(int) AttributeValue[1] -1], (int) AttributeValue[2], (int) AttributeValue[3], (int) AttributeValue[4], sessionAlarm14);
+              Serial.print("Setting Alarm ");
+              Serial.println(alarmDay[(int) AttributeValue[1] -1], DEC);
               Serial.print(AttributeValue[2], DEC);
               Serial.print(":");
               Serial.print(AttributeValue[3], DEC);
               Serial.print(":");
               Serial.println(AttributeValue[4], DEC);
-              volume[AttributeValue[0]-1] = (AttributeValue[5]*128) + AttributeValue[6];
-              duration[AttributeValue[0]-1] = (AttributeValue[7]*128) + AttributeValue[8];
+              duration[AttributeValue[0]-1] = (AttributeValue[5]*128) + AttributeValue[6];
+              volume[AttributeValue[0]-1] = (AttributeValue[7]*128) + AttributeValue[8];
+              Serial.print("Volume : ");
+              Serial.print(volume[AttributeValue[0]-1]);
+              Serial.print("Duration : ");
+              Serial.println(duration[AttributeValue[0]-1]);
             break;
 
-            case 16: //Wednesday4
-              id[AttributeValue[0]-1] = Alarm.alarmRepeat(dowWednesday, (int) AttributeValue[2], (int) AttributeValue[3], (int) AttributeValue[4], sessionAlarm15);
-              Serial.print("Setting Alarm - Wednesday ");
+            case 16: //Alarm16
+              id[AttributeValue[0]-1] = Alarm.alarmRepeat(alarmDay[(int) AttributeValue[1] -1], (int) AttributeValue[2], (int) AttributeValue[3], (int) AttributeValue[4], sessionAlarm15);
+              Serial.print("Setting Alarm ");
+              Serial.println(alarmDay[(int) AttributeValue[1] -1], DEC);
               Serial.print(AttributeValue[2], DEC);
               Serial.print(":");
               Serial.print(AttributeValue[3], DEC);
               Serial.print(":");
               Serial.println(AttributeValue[4], DEC);
-              volume[AttributeValue[0]-1] = (AttributeValue[5]*128) + AttributeValue[6];
-              duration[AttributeValue[0]-1] = (AttributeValue[7]*128) + AttributeValue[8];
+              duration[AttributeValue[0]-1] = (AttributeValue[5]*128) + AttributeValue[6];
+              volume[AttributeValue[0]-1] = (AttributeValue[7]*128) + AttributeValue[8];
+              Serial.print("Volume : ");
+              Serial.print(volume[AttributeValue[0]-1]);
+              Serial.print("Duration : ");
+              Serial.println(duration[AttributeValue[0]-1]);
             break;
 
-            case 17: //Thursday1
-              id[AttributeValue[0]-1] = Alarm.alarmRepeat(dowThursday, (int) AttributeValue[2], (int) AttributeValue[3], (int) AttributeValue[4], sessionAlarm16);
-              Serial.print("Setting Alarm - Thursday ");
+            case 17: //Alarm17
+              id[AttributeValue[0]-1] = Alarm.alarmRepeat(alarmDay[(int) AttributeValue[1] -1], (int) AttributeValue[2], (int) AttributeValue[3], (int) AttributeValue[4], sessionAlarm16);
+              Serial.print("Setting Alarm ");
+              Serial.println(alarmDay[(int) AttributeValue[1] -1], DEC);
               Serial.print(AttributeValue[2], DEC);
               Serial.print(":");
               Serial.print(AttributeValue[3], DEC);
               Serial.print(":");
               Serial.println(AttributeValue[4], DEC);
-              volume[AttributeValue[0]-1] = (AttributeValue[5]*128) + AttributeValue[6];
-              duration[AttributeValue[0]-1] = (AttributeValue[7]*128) + AttributeValue[8];
+              duration[AttributeValue[0]-1] = (AttributeValue[5]*128) + AttributeValue[6];
+              volume[AttributeValue[0]-1] = (AttributeValue[7]*128) + AttributeValue[8];
+              Serial.print("Volume : ");
+              Serial.print(volume[AttributeValue[0]-1]);
+              Serial.print("Duration : ");
+              Serial.println(duration[AttributeValue[0]-1]);
             break;
 
-            case 18: //Thursday2
-              id[AttributeValue[0]-1] = Alarm.alarmRepeat(dowThursday, (int) AttributeValue[2], (int) AttributeValue[3], (int) AttributeValue[4], sessionAlarm17);
-              Serial.print("Setting Alarm - Thursday ");
+            case 18: //Alarm18
+              id[AttributeValue[0]-1] = Alarm.alarmRepeat(alarmDay[(int) AttributeValue[1] -1], (int) AttributeValue[2], (int) AttributeValue[3], (int) AttributeValue[4], sessionAlarm17);
+              Serial.print("Setting Alarm ");
+              Serial.println(alarmDay[(int) AttributeValue[1] -1], DEC);
               Serial.print(AttributeValue[2], DEC);
               Serial.print(":");
               Serial.print(AttributeValue[3], DEC);
               Serial.print(":");
               Serial.println(AttributeValue[4], DEC);
-              volume[AttributeValue[0]-1] = (AttributeValue[5]*128) + AttributeValue[6];
-              duration[AttributeValue[0]-1] = (AttributeValue[7]*128) + AttributeValue[8];
+              duration[AttributeValue[0]-1] = (AttributeValue[5]*128) + AttributeValue[6];
+              volume[AttributeValue[0]-1] = (AttributeValue[7]*128) + AttributeValue[8];
+              Serial.print("Volume : ");
+              Serial.print(volume[AttributeValue[0]-1]);
+              Serial.print("Duration : ");
+              Serial.println(duration[AttributeValue[0]-1]);
             break;
 
-            case 19: //Thursday3
-              id[AttributeValue[0]-1] = Alarm.alarmRepeat(dowThursday, (int) AttributeValue[2], (int) AttributeValue[3], (int) AttributeValue[4], sessionAlarm18);
-              Serial.print("Setting Alarm - Thursday ");
+            case 19: //Alarm19
+              id[AttributeValue[0]-1] = Alarm.alarmRepeat(alarmDay[(int) AttributeValue[1] -1], (int) AttributeValue[2], (int) AttributeValue[3], (int) AttributeValue[4], sessionAlarm18);
+              Serial.print("Setting Alarm ");
+              Serial.println(alarmDay[(int) AttributeValue[1] -1], DEC);
               Serial.print(AttributeValue[2], DEC);
               Serial.print(":");
               Serial.print(AttributeValue[3], DEC);
               Serial.print(":");
               Serial.println(AttributeValue[4], DEC);
-              volume[AttributeValue[0]-1] = (AttributeValue[5]*128) + AttributeValue[6];
-              duration[AttributeValue[0]-1] = (AttributeValue[7]*128) + AttributeValue[8];
+              duration[AttributeValue[0]-1] = (AttributeValue[5]*128) + AttributeValue[6];
+              volume[AttributeValue[0]-1] = (AttributeValue[7]*128) + AttributeValue[8];
+              Serial.print("Volume : ");
+              Serial.print(volume[AttributeValue[0]-1]);
+              Serial.print("Duration : ");
+              Serial.println(duration[AttributeValue[0]-1]);
             break;
 
-            case 20: //Thursday4
-              id[AttributeValue[0]-1] = Alarm.alarmRepeat(dowThursday, (int) AttributeValue[2], (int) AttributeValue[3], (int) AttributeValue[4], sessionAlarm19);
-              Serial.print("Setting Alarm - Thursday ");
+            case 20: //Alarm20
+              id[AttributeValue[0]-1] = Alarm.alarmRepeat(alarmDay[(int) AttributeValue[1] -1], (int) AttributeValue[2], (int) AttributeValue[3], (int) AttributeValue[4], sessionAlarm19);
+              Serial.print("Setting Alarm ");
+              Serial.println(alarmDay[(int) AttributeValue[1] -1], DEC);
               Serial.print(AttributeValue[2], DEC);
               Serial.print(":");
               Serial.print(AttributeValue[3], DEC);
               Serial.print(":");
               Serial.println(AttributeValue[4], DEC);
-              volume[AttributeValue[0]-1] = (AttributeValue[5]*128) + AttributeValue[6];
-              duration[AttributeValue[0]-1] = (AttributeValue[7]*128) + AttributeValue[8];
+              duration[AttributeValue[0]-1] = (AttributeValue[5]*128) + AttributeValue[6];
+              volume[AttributeValue[0]-1] = (AttributeValue[7]*128) + AttributeValue[8];
+              Serial.print("Volume : ");
+              Serial.print(volume[AttributeValue[0]-1]);
+              Serial.print("Duration : ");
+              Serial.println(duration[AttributeValue[0]-1]);
             break;
 
-            case 21: //Friday1
-              id[AttributeValue[0]-1] = Alarm.alarmRepeat(dowFriday, (int) AttributeValue[2], (int) AttributeValue[3], (int) AttributeValue[4], sessionAlarm20);
-              Serial.print("Setting Alarm - Friday ");
+            case 21: //Alarm21
+              id[AttributeValue[0]-1] = Alarm.alarmRepeat(alarmDay[(int) AttributeValue[1] -1], (int) AttributeValue[2], (int) AttributeValue[3], (int) AttributeValue[4], sessionAlarm20);
+              Serial.print("Setting Alarm ");
+              Serial.println(alarmDay[(int) AttributeValue[1] -1], DEC);
               Serial.print(AttributeValue[2], DEC);
               Serial.print(":");
               Serial.print(AttributeValue[3], DEC);
               Serial.print(":");
               Serial.println(AttributeValue[4], DEC);
-              volume[AttributeValue[0]-1] = (AttributeValue[5]*128) + AttributeValue[6];
-              duration[AttributeValue[0]-1] = (AttributeValue[7]*128) + AttributeValue[8];
+              duration[AttributeValue[0]-1] = (AttributeValue[5]*128) + AttributeValue[6];
+              volume[AttributeValue[0]-1] = (AttributeValue[7]*128) + AttributeValue[8];
+              Serial.print("Volume : ");
+              Serial.print(volume[AttributeValue[0]-1]);
+              Serial.print("Duration : ");
+              Serial.println(duration[AttributeValue[0]-1]);
             break;
 
-            case 22: //Friday2
-              id[AttributeValue[0]-1] = Alarm.alarmRepeat(dowFriday, (int) AttributeValue[2], (int) AttributeValue[3], (int) AttributeValue[4], sessionAlarm21);
-              Serial.print("Setting Alarm - Friday ");
+            case 22: //Alarm22
+              id[AttributeValue[0]-1] = Alarm.alarmRepeat(alarmDay[(int) AttributeValue[1] -1], (int) AttributeValue[2], (int) AttributeValue[3], (int) AttributeValue[4], sessionAlarm21);
+              Serial.print("Setting Alarm ");
+              Serial.println(alarmDay[(int) AttributeValue[1] -1], DEC);
               Serial.print(AttributeValue[2], DEC);
               Serial.print(":");
               Serial.print(AttributeValue[3], DEC);
               Serial.print(":");
               Serial.println(AttributeValue[4], DEC);
-              volume[AttributeValue[0]-1] = (AttributeValue[5]*128) + AttributeValue[6];
-              duration[AttributeValue[0]-1] = (AttributeValue[7]*128) + AttributeValue[8];
+              duration[AttributeValue[0]-1] = (AttributeValue[5]*128) + AttributeValue[6];
+              volume[AttributeValue[0]-1] = (AttributeValue[7]*128) + AttributeValue[8];
+              Serial.print("Volume : ");
+              Serial.print(volume[AttributeValue[0]-1]);
+              Serial.print("Duration : ");
+              Serial.println(duration[AttributeValue[0]-1]);
             break;
 
-            case 23: //Friday3
-              id[AttributeValue[0]-1] = Alarm.alarmRepeat(dowFriday, (int) AttributeValue[2], (int) AttributeValue[3], (int) AttributeValue[4], sessionAlarm22);
-              Serial.print("Setting Alarm - Friday ");
+            case 23: //Alarm23
+              id[AttributeValue[0]-1] = Alarm.alarmRepeat(alarmDay[(int) AttributeValue[1] -1], (int) AttributeValue[2], (int) AttributeValue[3], (int) AttributeValue[4], sessionAlarm22);
+              Serial.print("Setting Alarm ");
+              Serial.println(alarmDay[(int) AttributeValue[1] -1], DEC);
               Serial.print(AttributeValue[2], DEC);
               Serial.print(":");
               Serial.print(AttributeValue[3], DEC);
               Serial.print(":");
               Serial.println(AttributeValue[4], DEC);
-              volume[AttributeValue[0]-1] = (AttributeValue[5]*128) + AttributeValue[6];
-              duration[AttributeValue[0]-1] = (AttributeValue[7]*128) + AttributeValue[8];
+              duration[AttributeValue[0]-1] = (AttributeValue[5]*128) + AttributeValue[6];
+              volume[AttributeValue[0]-1] = (AttributeValue[7]*128) + AttributeValue[8];
+              Serial.print("Volume : ");
+              Serial.print(volume[AttributeValue[0]-1]);
+              Serial.print("Duration : ");
+              Serial.println(duration[AttributeValue[0]-1]);
             break;
 
-            case 24: //Friday4
-              id[AttributeValue[0]-1] = Alarm.alarmRepeat(dowFriday, (int) AttributeValue[2], (int) AttributeValue[3], (int) AttributeValue[4], sessionAlarm23);
-              Serial.print("Setting Alarm - Friday ");
+            case 24: //Alarm24
+              id[AttributeValue[0]-1] = Alarm.alarmRepeat(alarmDay[(int) AttributeValue[1] -1], (int) AttributeValue[2], (int) AttributeValue[3], (int) AttributeValue[4], sessionAlarm23);
+              Serial.print("Setting Alarm ");
+              Serial.println(alarmDay[(int) AttributeValue[1] -1], DEC);
               Serial.print(AttributeValue[2], DEC);
               Serial.print(":");
               Serial.print(AttributeValue[3], DEC);
               Serial.print(":");
               Serial.println(AttributeValue[4], DEC);
-              volume[AttributeValue[0]-1] = (AttributeValue[5]*128) + AttributeValue[6];
-              duration[AttributeValue[0]-1] = (AttributeValue[7]*128) + AttributeValue[8];
+              duration[AttributeValue[0]-1] = (AttributeValue[5]*128) + AttributeValue[6];
+              volume[AttributeValue[0]-1] = (AttributeValue[7]*128) + AttributeValue[8];
+              Serial.print("Volume : ");
+              Serial.print(volume[AttributeValue[0]-1]);
+              Serial.print("Duration : ");
+              Serial.println(duration[AttributeValue[0]-1]);
             break;
 
-            case 25: //Saturday1
-              id[AttributeValue[0]-1] = Alarm.alarmRepeat(dowSaturday, (int) AttributeValue[2], (int) AttributeValue[3], (int) AttributeValue[4], sessionAlarm24);
-              Serial.print("Setting Alarm - Saturday ");
+            case 25: //Alarm25
+              id[AttributeValue[0]-1] = Alarm.alarmRepeat(alarmDay[(int) AttributeValue[1] -1], (int) AttributeValue[2], (int) AttributeValue[3], (int) AttributeValue[4], sessionAlarm24);
+              Serial.print("Setting Alarm ");
+              Serial.println(alarmDay[(int) AttributeValue[1] -1], DEC);
               Serial.print(AttributeValue[2], DEC);
               Serial.print(":");
               Serial.print(AttributeValue[3], DEC);
               Serial.print(":");
               Serial.println(AttributeValue[4], DEC);
-              volume[AttributeValue[0]-1] = (AttributeValue[5]*128) + AttributeValue[6];
-              duration[AttributeValue[0]-1] = (AttributeValue[7]*128) + AttributeValue[8];
+              duration[AttributeValue[0]-1] = (AttributeValue[5]*128) + AttributeValue[6];
+              volume[AttributeValue[0]-1] = (AttributeValue[7]*128) + AttributeValue[8];
+              Serial.print("Volume : ");
+              Serial.print(volume[AttributeValue[0]-1]);
+              Serial.print("Duration : ");
+              Serial.println(duration[AttributeValue[0]-1]);
             break;
 
-            case 26: //Saturday2
-              id[AttributeValue[0]-1] = Alarm.alarmRepeat(dowSaturday, (int) AttributeValue[2], (int) AttributeValue[3], (int) AttributeValue[4], sessionAlarm25);
-              Serial.print("Setting Alarm - Saturday ");
+            case 26: //Alarm26
+              id[AttributeValue[0]-1] = Alarm.alarmRepeat(alarmDay[(int) AttributeValue[1] -1], (int) AttributeValue[2], (int) AttributeValue[3], (int) AttributeValue[4], sessionAlarm25);
+              Serial.print("Setting Alarm ");
+              Serial.println(alarmDay[(int) AttributeValue[1] -1], DEC);
               Serial.print(AttributeValue[2], DEC);
               Serial.print(":");
               Serial.print(AttributeValue[3], DEC);
               Serial.print(":");
               Serial.println(AttributeValue[4], DEC);
-              volume[AttributeValue[0]-1] = (AttributeValue[5]*128) + AttributeValue[6];
-              duration[AttributeValue[0]-1] = (AttributeValue[7]*128) + AttributeValue[8];
+              duration[AttributeValue[0]-1] = (AttributeValue[5]*128) + AttributeValue[6];
+              volume[AttributeValue[0]-1] = (AttributeValue[7]*128) + AttributeValue[8];
+              Serial.print("Volume : ");
+              Serial.print(volume[AttributeValue[0]-1]);
+              Serial.print("Duration : ");
+              Serial.println(duration[AttributeValue[0]-1]);
             break;
 
-            case 27: //Saturday3
-              id[AttributeValue[0]-1] = Alarm.alarmRepeat(dowSaturday, (int) AttributeValue[2], (int) AttributeValue[3], (int) AttributeValue[4], sessionAlarm26);
-              Serial.print("Setting Alarm - Saturday ");
+            case 27: //Alarm27
+              id[AttributeValue[0]-1] = Alarm.alarmRepeat(alarmDay[(int) AttributeValue[1] -1], (int) AttributeValue[2], (int) AttributeValue[3], (int) AttributeValue[4], sessionAlarm26);
+              Serial.print("Setting Alarm ");
+              Serial.println(alarmDay[(int) AttributeValue[1] -1], DEC);
               Serial.print(AttributeValue[2], DEC);
               Serial.print(":");
               Serial.print(AttributeValue[3], DEC);
               Serial.print(":");
               Serial.println(AttributeValue[4], DEC);
-              volume[AttributeValue[0]-1] = (AttributeValue[5]*128) + AttributeValue[6];
-              duration[AttributeValue[0]-1] = (AttributeValue[7]*128) + AttributeValue[8];
+              duration[AttributeValue[0]-1] = (AttributeValue[5]*128) + AttributeValue[6];
+              volume[AttributeValue[0]-1] = (AttributeValue[7]*128) + AttributeValue[8];
+              Serial.print("Volume : ");
+              Serial.print(volume[AttributeValue[0]-1]);
+              Serial.print("Duration : ");
+              Serial.println(duration[AttributeValue[0]-1]);
             break;
 
-            case 28: //Saturday4
-              id[AttributeValue[0]-1] = Alarm.alarmRepeat(dowSaturday, (int) AttributeValue[2], (int) AttributeValue[3], (int) AttributeValue[4], sessionAlarm27);
-              Serial.print("Setting Alarm - Saturday ");
+            case 28: //Alarm28
+              id[AttributeValue[0]-1] = Alarm.alarmRepeat(alarmDay[(int) AttributeValue[1] -1], (int) AttributeValue[2], (int) AttributeValue[3], (int) AttributeValue[4], sessionAlarm27);
+              Serial.print("Setting Alarm ");
+              Serial.println(alarmDay[(int) AttributeValue[1] -1], DEC);
               Serial.print(AttributeValue[2], DEC);
               Serial.print(":");
               Serial.print(AttributeValue[3], DEC);
               Serial.print(":");
               Serial.println(AttributeValue[4], DEC);
-              volume[AttributeValue[0]-1] = (AttributeValue[5]*128) + AttributeValue[6];
-              duration[AttributeValue[0]-1] = (AttributeValue[7]*128) + AttributeValue[8];
+              duration[AttributeValue[0]-1] = (AttributeValue[5]*128) + AttributeValue[6];
+              volume[AttributeValue[0]-1] = (AttributeValue[7]*128) + AttributeValue[8];
+              Serial.print("Volume : ");
+              Serial.print(volume[AttributeValue[0]-1]);
+              Serial.print("Duration : ");
+              Serial.println(duration[AttributeValue[0]-1]);
             break;
           }
          }

@@ -1,8 +1,3 @@
-//#include <Power.h>
-//#include <wsrc.h>
-#include <Bounce2.h>
-#include <TimeLib.h>
-
 /*
  * Author: Vijay Rao
  *
@@ -12,18 +7,20 @@
  *
  *
  */
+
+#include <Bounce2.h>
+#include <TimeLib.h>
+#include <CurieBLE.h>
+#include <Time.h>
+#include <TimeLib.h>
+#include <TimeAlarms.h>
+
 #define solenoidP 8
 #define solenoidN 7
 #define button 2
 #define flowSensor 4
 
 timeDayOfWeek_t alarmDay[7] = {dowSunday, dowMonday, dowTuesday, dowWednesday, dowThursday, dowFriday, dowSaturday};
-
-
-#include <CurieBLE.h>
-#include <Time.h>
-#include <TimeLib.h>
-#include <TimeAlarms.h>
 
 String inputString = "";         // a String to hold incoming data
 boolean stringComplete = false;  // whether the string is complete
@@ -35,7 +32,6 @@ static uint16_t volume[28];
 static uint16_t duration[28];
 static uint16_t flowCounter = 0;
 
-
 // BLE objects
 BLEPeripheral blePeripheral;
 
@@ -45,13 +41,14 @@ char device_name[] = "Pebble";
 
 // Characteristic Properties
 
-
 //Pebble Characteristic Properties
 unsigned char CurrentTimeService_CurrentTime_props = BLERead | BLEWrite | 0;
 unsigned char BatteryService_BatteryLevel_props = BLERead | 0;
 unsigned char PotsService_Pots_props = BLERead | BLEWrite | 0;
 unsigned char TimePointService_NewPoint_props = BLEWrite | 0;
 unsigned char ValveControllerService_Command_props = BLEWrite | 0;
+unsigned char LogService_EventCharacteristic_props = BLEWrite | BLERead | 0;
+//unsigned char LogService_ReadIndex_props = BLEWrite | 0;
 
 
 char AttributeValue[32];
@@ -60,13 +57,12 @@ char AttributeValue[32];
 //Pebble Services and Characteristics
 BLEService BatteryService("6E521ABEB56F4B058465A1CEE41BB141");
 BLECharacteristic BatteryService_BatteryLevel("6E52C8E5B56F4B058465A1CEE41BB141", BatteryService_BatteryLevel_props, 1);
-//1 byte = Total Length
+//Total Length = 1 byte
 //1 byte = uint8 Level
-//BLEDescriptor BatteryService_BatteryLevel_CharacteristicPresentationFormat("2904", 0);
 
 BLEService CurrentTimeService("6E52A9DAB56F4B058465A1CEE41BB141");
 BLECharacteristic CurrentTimeService_CurrentTime("6E52AC46B56F4B058465A1CEE41BB141", CurrentTimeService_CurrentTime_props, 7);
-//7 bytes = Total Length
+//Total Length = 7 bytes
 //1 byte = uint8 hours
 //1 byte = uint8 minutes
 //1 byte = uint8 seconds
@@ -81,7 +77,7 @@ BLECharacteristic PotsService_Pots("6E52E386B56F4B058465A1CEE41BB141", PotsServi
 
 BLEService TimePointService("6E52214FB56F4B058465A1CEE41BB141");
 BLECharacteristic TimePointService_NewPoint("6E529480B56F4B058465A1CEE41BB141", TimePointService_NewPoint_props, 9);
-//9 bytes = Total Length
+//Total Length = 9 bytes
 //1 byte = uint8 Index (Time Point Number)
 //1 byte = uint8 Day of the Week
 //1 byte = uint8 hours
@@ -92,7 +88,26 @@ BLECharacteristic TimePointService_NewPoint("6E529480B56F4B058465A1CEE41BB141", 
 
 BLEService ValveControllerService("6E52C714B56F4B058465A1CEE41BB141");
 BLECharacteristic ValveControllerService_Command("6E52CFDBB56F4B058465A1CEE41BB141", ValveControllerService_Command_props, 1);
+//Total Length = 1 byte
+//1 byte = uint8 CommandCode
 
+BLEService LogService("6E52ABCDB56F4B058465A1CEE41BB141");
+BLECharacteristic LogService_EventCharacteristic("6E521234B56F4B058465A1CEE41BB141", LogService_EventCharacteristic_props, 15);
+//Total Length = 15 bytes
+//4 bytes : long time
+//1 byte : code
+//10 bytes : data
+//BLECharacteristic LogService_ReadIndex("6E521235B56F4B058465A1CEE41BB141", LogService_ReadIndex_props, 2);
+//Total Length = 2 bytes
+//2 bytes : uint16 readingIndex
+
+struct logEvent {
+  unsigned char eventCode;
+  unsigned long eventTime;
+  unsigned char data[9];
+} logData[1000];
+
+uint16_t logDataCursor = 0;
 
 void setup() {
   pinMode(13, OUTPUT);
@@ -158,8 +173,8 @@ void setup() {
 
   char batteryLevel = 100;
   const char * batteryLevelPtr = &batteryLevel;
-  //BatteryService_BatteryLevel.setValue(batteryLevel);
-
+  const unsigned char logEvent[15] = {'1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
+  //const unsigned char * logEventPtr = &logEvent;
   Serial.begin(9600);
   //while (! Serial); // Wait until Serial is ready
   Serial.println("setup()");
@@ -183,9 +198,9 @@ void setup() {
 
   blePeripheral.addAttribute(ValveControllerService);
   blePeripheral.addAttribute(ValveControllerService_Command);
-  //blePeripheral.addAttribute(ValveControllerService_Start);
-  //blePeripheral.addAttribute(ValveControllerService_Stop);
-  //blePeripheral.addAttribute(ValveControllerService_Pause);
+
+  blePeripheral.addAttribute(LogService);
+  blePeripheral.addAttribute(LogService_EventCharacteristic);
 
   blePeripheral.setAdvertisedServiceUuid("180F");
 
@@ -193,8 +208,9 @@ void setup() {
   Serial.println("attribute table constructed");
   // begin advertising
   blePeripheral.begin();
-
+  Serial.println("Advertising");
   BatteryService_BatteryLevel.setValue(batteryLevelPtr);
+  //LogService_EventCharacteristic.setValue(logEventPtr);
 }
 
 
@@ -546,9 +562,33 @@ void loop() {
          AttributeValue[copyingIndex] = NULL;
 
          Serial.println("PotsService_Pots.written()");
-         Serial.print(AttributeValue[0], HEX);
+         Serial.print(AttributeValue[0], DEC);
          Serial.println(".");
-         solenoidOpen();
+         digitalWrite(13, HIGH);
+         delay(50);              // wait for a second
+         digitalWrite(13, LOW);
+         delay(50);              // wait for a second
+
+        }
+
+        ////////////////////
+        //Log Service
+        ////////////////////
+        if (LogService_EventCharacteristic.written()) {
+        // application logic for handling WRITE or WRITE_WITHOUT_RESPONSE on characteristic Pots goes here
+         uint16_t copyingIndex;
+         for(copyingIndex = 0; copyingIndex<LogService_EventCharacteristic.valueLength(); copyingIndex++)
+         {
+           AttributeValue[copyingIndex] = LogService_EventCharacteristic.value()[copyingIndex];
+         }
+         AttributeValue[copyingIndex] = NULL;
+
+         Serial.print("LogService_EventCharacteristic written. Characteristic will be set to logData of ");
+         Serial.print((AttributeValue[0] * 256) + AttributeValue[1], DEC);
+         Serial.println(".");
+
+         const unsigned char logDataBuffer[15] = "1234567890ABCD";
+         LogService_EventCharacteristic.setValue(logDataBuffer, 15);
          digitalWrite(13, HIGH);
          delay(50);              // wait for a second
          digitalWrite(13, LOW);
@@ -622,23 +662,23 @@ void loop() {
          Serial.println(AttributeValue);
 
          Serial.println("TimePointService_NewWateringTimePoint.written()");
-         Serial.print(AttributeValue[0], HEX);
+         Serial.print(AttributeValue[0], DEC);
          Serial.print(",");
-         Serial.print(AttributeValue[1], HEX);
+         Serial.print(AttributeValue[1], DEC);
          Serial.print(",");
-         Serial.print(AttributeValue[2], HEX);
+         Serial.print(AttributeValue[2], DEC);
          Serial.print(",");
-         Serial.print(AttributeValue[3], HEX);
+         Serial.print(AttributeValue[3], DEC);
          Serial.print(",");
-         Serial.print(AttributeValue[4], HEX);
+         Serial.print(AttributeValue[4], DEC);
          Serial.print(",");
-         Serial.print(AttributeValue[5], HEX);
+         Serial.print(AttributeValue[5], DEC);
          Serial.print(",");
-         Serial.print(AttributeValue[6], HEX);
+         Serial.print(AttributeValue[6], DEC);
          Serial.print(",");
-         Serial.print(AttributeValue[7], HEX);
+         Serial.print(AttributeValue[7], DEC);
          Serial.print(",");
-         Serial.print(AttributeValue[8], HEX);
+         Serial.print(AttributeValue[8], DEC);
          Serial.println(".");
 
          if(AttributeValue[0] == 0)
@@ -1151,7 +1191,6 @@ void loop() {
         if (BatteryService_BatteryLevel.read()) {
           Serial.println("Battery Level Read");
         }
-
     }
     // when the central disconnects, print it out:
     Serial.print("Disconnected from central: ");

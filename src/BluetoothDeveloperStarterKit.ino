@@ -175,7 +175,7 @@ void setup() {
   const char * batteryLevelPtr = &batteryLevel;
   const unsigned char logEvent[15] = {'1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
   //const unsigned char * logEventPtr = &logEvent;
-  Serial.begin(9600);
+  Serial.begin(115200);
   //while (! Serial); // Wait until Serial is ready
   Serial.println("setup()");
 
@@ -584,11 +584,26 @@ void loop() {
          AttributeValue[copyingIndex] = NULL;
 
          Serial.print("LogService_EventCharacteristic written. Characteristic will be set to logData of ");
-         Serial.print(((unsigned char) AttributeValue[0]) * 256) + (unsigned char) AttributeValue[1], DEC);
+         Serial.print((((unsigned char) AttributeValue[0]) * 256) + (unsigned char) AttributeValue[1], DEC);
          Serial.println(".");
 
-         const unsigned char logDataBuffer[15] = "1234567890ABCD";
-         LogService_EventCharacteristic.setValue(logDataBuffer, 15);
+         unsigned long eventTime = now() - 19800; //This time has to be in GMT. IST - 5hours30minutes gives GMT.
+         unsigned char time[4];
+         time[0] = (unsigned char)(eventTime >> 24);
+         time[1] = (unsigned char)(eventTime >> 16);
+         time[2] = (unsigned char)(eventTime >> 8);
+         time[3] = (unsigned char)(eventTime);
+         Serial.println(eventTime, DEC);
+         Serial.print(time[0], DEC);
+         Serial.print(" ");
+         Serial.print(time[1], DEC);
+         Serial.print(" ");
+         Serial.print(time[2], DEC);
+         Serial.print(" ");
+         Serial.println(time[3], DEC);
+         const unsigned char logEvent[15] = {time[0],time[1],time[2],time[3],'5','6','7','8','9','A','B','C','D','E','F'};
+
+         LogService_EventCharacteristic.setValue(logEvent, 15);
          digitalWrite(13, HIGH);
          delay(50);              // wait for a second
          digitalWrite(13, LOW);
@@ -659,9 +674,9 @@ void loop() {
          }
          AttributeValue[copyingIndex] = NULL;
          //strncpy(AttributeValue,(char*)TimePointService_NewPoint.value(),TimePointService_NewPoint.valueLength());
-         Serial.println(AttributeValue);
+         //Serial.println(AttributeValue);
 
-         Serial.println("TimePointService_NewWateringTimePoint.written()");
+         /*Serial.println("TimePointService_NewWateringTimePoint.written()");
          Serial.print(AttributeValue[0], DEC);
          Serial.print(",");
          Serial.print(AttributeValue[1], DEC);
@@ -679,7 +694,7 @@ void loop() {
          Serial.print(AttributeValue[7], DEC);
          Serial.print(",");
          Serial.print(AttributeValue[8], DEC);
-         Serial.println(".");
+         Serial.println(".");*/
 
          if(AttributeValue[0] == 0)
          {

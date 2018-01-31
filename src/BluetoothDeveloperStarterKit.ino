@@ -531,7 +531,7 @@ void loop() {
          Serial.println(".");
 
          // setting up system time
-        setTime(AttributeValue[0], AttributeValue[1], AttributeValue[2], AttributeValue[3], AttributeValue[4], ((256 * (int) AttributeValue[5]) + (int) AttributeValue[6]));
+        setTime(AttributeValue[0], AttributeValue[1], AttributeValue[2], AttributeValue[3], AttributeValue[4], ((256 * (unsigned char) AttributeValue[5]) + (unsigned char) AttributeValue[6]));
         t = now();
         Serial.print(hour(t));
         Serial.print(":");
@@ -584,7 +584,7 @@ void loop() {
          AttributeValue[copyingIndex] = NULL;
 
          Serial.print("LogService_EventCharacteristic written. Characteristic will be set to logData of ");
-         Serial.print((AttributeValue[0] * 256) + AttributeValue[1], DEC);
+         Serial.print(((unsigned char) AttributeValue[0]) * 256) + (unsigned char) AttributeValue[1], DEC);
          Serial.println(".");
 
          const unsigned char logDataBuffer[15] = "1234567890ABCD";
@@ -706,8 +706,8 @@ void loop() {
               Serial.print(AttributeValue[3], DEC);
               Serial.print(":");
               Serial.println(AttributeValue[4], DEC);
-              duration[AttributeValue[0]-1] = (AttributeValue[5]*256) + AttributeValue[6];
-              volume[AttributeValue[0]-1] = (AttributeValue[7]*256) + AttributeValue[8];
+              duration[AttributeValue[0]-1] = (((unsigned char) AttributeValue[5]) * 256) + (unsigned char) AttributeValue[6];
+              volume[AttributeValue[0]-1] = (((unsigned char) AttributeValue[7]) * 256) + (unsigned char) AttributeValue[8];
               Serial.print("Volume : ");
               Serial.print(volume[AttributeValue[0]-1]);
               Serial.print("Duration : ");
@@ -723,8 +723,8 @@ void loop() {
               Serial.print(AttributeValue[3], DEC);
               Serial.print(":");
               Serial.println(AttributeValue[4], DEC);
-              duration[AttributeValue[0]-1] = (AttributeValue[5]*256) + AttributeValue[6];
-              volume[AttributeValue[0]-1] = (AttributeValue[7]*256) + AttributeValue[8];
+              duration[AttributeValue[0]-1] = (((unsigned char) AttributeValue[5]) * 256) + (unsigned char) AttributeValue[6];
+              volume[AttributeValue[0]-1] = (((unsigned char) AttributeValue[7]) * 256) + (unsigned char) AttributeValue[8];
               Serial.print("Volume : ");
               Serial.print(volume[AttributeValue[0]-1]);
               Serial.print("Duration : ");
@@ -740,8 +740,8 @@ void loop() {
               Serial.print(AttributeValue[3], DEC);
               Serial.print(":");
               Serial.println(AttributeValue[4], DEC);
-              duration[AttributeValue[0]-1] = (AttributeValue[5]*256) + AttributeValue[6];
-              volume[AttributeValue[0]-1] = (AttributeValue[7]*256) + AttributeValue[8];
+              duration[AttributeValue[0]-1] = (((unsigned char) AttributeValue[5]) * 256) + (unsigned char) AttributeValue[6];
+              volume[AttributeValue[0]-1] = (((unsigned char) AttributeValue[7]) * 256) + (unsigned char) AttributeValue[8];
               Serial.print("Volume : ");
               Serial.print(volume[AttributeValue[0]-1]);
               Serial.print("Duration : ");
@@ -757,8 +757,8 @@ void loop() {
               Serial.print(AttributeValue[3], DEC);
               Serial.print(":");
               Serial.println(AttributeValue[4], DEC);
-              duration[AttributeValue[0]-1] = (AttributeValue[5]*256) + AttributeValue[6];
-              volume[AttributeValue[0]-1] = (AttributeValue[7]*256) + AttributeValue[8];
+              duration[AttributeValue[0]-1] = (((unsigned char) AttributeValue[5]) * 256) + (unsigned char) AttributeValue[6];
+              volume[AttributeValue[0]-1] = (((unsigned char) AttributeValue[7]) * 256) + (unsigned char) AttributeValue[8];
               Serial.print("Volume : ");
               Serial.print(volume[AttributeValue[0]-1]);
               Serial.print("Duration : ");
@@ -775,8 +775,8 @@ void loop() {
               Serial.print(AttributeValue[3], DEC);
               Serial.print(":");
               Serial.println(AttributeValue[4], DEC);
-              duration[AttributeValue[0]-1] = (AttributeValue[5]*256) + AttributeValue[6];
-              volume[AttributeValue[0]-1] = (AttributeValue[7]*256) + AttributeValue[8];
+              duration[AttributeValue[0]-1] = (((unsigned char) AttributeValue[5]) * 256) + (unsigned char) AttributeValue[6];
+              volume[AttributeValue[0]-1] = (((unsigned char) AttributeValue[7]) * 256) + (unsigned char) AttributeValue[8];
               Serial.print("Volume : ");
               Serial.print(volume[AttributeValue[0]-1]);
               Serial.print("Duration : ");
@@ -792,8 +792,8 @@ void loop() {
               Serial.print(AttributeValue[3], DEC);
               Serial.print(":");
               Serial.println(AttributeValue[4], DEC);
-              duration[AttributeValue[0]-1] = (AttributeValue[5]*256) + AttributeValue[6];
-              volume[AttributeValue[0]-1] = (AttributeValue[7]*256) + AttributeValue[8];
+              duration[AttributeValue[0]-1] = (((unsigned char) AttributeValue[5]) * 256) + (unsigned char) AttributeValue[6];
+              volume[AttributeValue[0]-1] = (((unsigned char) AttributeValue[7]) * 256) + (unsigned char) AttributeValue[8];
               Serial.print("Volume : ");
               Serial.print(volume[AttributeValue[0]-1]);
               Serial.print("Duration : ");
@@ -809,8 +809,8 @@ void loop() {
               Serial.print(AttributeValue[3], DEC);
               Serial.print(":");
               Serial.println(AttributeValue[4], DEC);
-              duration[AttributeValue[0]-1] = (AttributeValue[5]*256) + AttributeValue[6];
-              volume[AttributeValue[0]-1] = (AttributeValue[7]*256) + AttributeValue[8];
+              duration[AttributeValue[0]-1] = (((unsigned char) AttributeValue[5]) * 256) + (unsigned char) AttributeValue[6];
+              volume[AttributeValue[0]-1] = (((unsigned char) AttributeValue[7]) * 256) + (unsigned char) AttributeValue[8];
               Serial.print("Volume : ");
               Serial.print(volume[AttributeValue[0]-1]);
               Serial.print("Duration : ");
@@ -826,8 +826,8 @@ void loop() {
               Serial.print(AttributeValue[3], DEC);
               Serial.print(":");
               Serial.println(AttributeValue[4], DEC);
-              duration[AttributeValue[0]-1] = (AttributeValue[5]*256) + AttributeValue[6];
-              volume[AttributeValue[0]-1] = (AttributeValue[7]*256) + AttributeValue[8];
+              duration[AttributeValue[0]-1] = (((unsigned char) AttributeValue[5]) * 256) + (unsigned char) AttributeValue[6];
+              volume[AttributeValue[0]-1] = (((unsigned char) AttributeValue[7]) * 256) + (unsigned char) AttributeValue[8];
               Serial.print("Volume : ");
               Serial.print(volume[AttributeValue[0]-1]);
               Serial.print("Duration : ");
@@ -843,8 +843,8 @@ void loop() {
               Serial.print(AttributeValue[3], DEC);
               Serial.print(":");
               Serial.println(AttributeValue[4], DEC);
-              duration[AttributeValue[0]-1] = (AttributeValue[5]*256) + AttributeValue[6];
-              volume[AttributeValue[0]-1] = (AttributeValue[7]*256) + AttributeValue[8];
+              duration[AttributeValue[0]-1] = (((unsigned char) AttributeValue[5]) * 256) + (unsigned char) AttributeValue[6];
+              volume[AttributeValue[0]-1] = (((unsigned char) AttributeValue[7]) * 256) + (unsigned char) AttributeValue[8];
               Serial.print("Volume : ");
               Serial.print(volume[AttributeValue[0]-1]);
               Serial.print("Duration : ");
@@ -860,8 +860,8 @@ void loop() {
               Serial.print(AttributeValue[3], DEC);
               Serial.print(":");
               Serial.println(AttributeValue[4], DEC);
-              duration[AttributeValue[0]-1] = (AttributeValue[5]*256) + AttributeValue[6];
-              volume[AttributeValue[0]-1] = (AttributeValue[7]*256) + AttributeValue[8];
+              duration[AttributeValue[0]-1] = (((unsigned char) AttributeValue[5]) * 256) + (unsigned char) AttributeValue[6];
+              volume[AttributeValue[0]-1] = (((unsigned char) AttributeValue[7]) * 256) + (unsigned char) AttributeValue[8];
               Serial.print("Volume : ");
               Serial.print(volume[AttributeValue[0]-1]);
               Serial.print("Duration : ");
@@ -877,8 +877,8 @@ void loop() {
               Serial.print(AttributeValue[3], DEC);
               Serial.print(":");
               Serial.println(AttributeValue[4], DEC);
-              duration[AttributeValue[0]-1] = (AttributeValue[5]*256) + AttributeValue[6];
-              volume[AttributeValue[0]-1] = (AttributeValue[7]*256) + AttributeValue[8];
+              duration[AttributeValue[0]-1] = (((unsigned char) AttributeValue[5]) * 256) + (unsigned char) AttributeValue[6];
+              volume[AttributeValue[0]-1] = (((unsigned char) AttributeValue[7]) * 256) + (unsigned char) AttributeValue[8];
               Serial.print("Volume : ");
               Serial.print(volume[AttributeValue[0]-1]);
               Serial.print("Duration : ");
@@ -894,8 +894,8 @@ void loop() {
               Serial.print(AttributeValue[3], DEC);
               Serial.print(":");
               Serial.println(AttributeValue[4], DEC);
-              duration[AttributeValue[0]-1] = (AttributeValue[5]*256) + AttributeValue[6];
-              volume[AttributeValue[0]-1] = (AttributeValue[7]*256) + AttributeValue[8];
+              duration[AttributeValue[0]-1] = (((unsigned char) AttributeValue[5]) * 256) + (unsigned char) AttributeValue[6];
+              volume[AttributeValue[0]-1] = (((unsigned char) AttributeValue[7]) * 256) + (unsigned char) AttributeValue[8];
               Serial.print("Volume : ");
               Serial.print(volume[AttributeValue[0]-1]);
               Serial.print("Duration : ");
@@ -911,8 +911,8 @@ void loop() {
               Serial.print(AttributeValue[3], DEC);
               Serial.print(":");
               Serial.println(AttributeValue[4], DEC);
-              duration[AttributeValue[0]-1] = (AttributeValue[5]*256) + AttributeValue[6];
-              volume[AttributeValue[0]-1] = (AttributeValue[7]*256) + AttributeValue[8];
+              duration[AttributeValue[0]-1] = (((unsigned char) AttributeValue[5]) * 256) + (unsigned char) AttributeValue[6];
+              volume[AttributeValue[0]-1] = (((unsigned char) AttributeValue[7]) * 256) + (unsigned char) AttributeValue[8];
               Serial.print("Volume : ");
               Serial.print(volume[AttributeValue[0]-1]);
               Serial.print("Duration : ");
@@ -928,8 +928,8 @@ void loop() {
               Serial.print(AttributeValue[3], DEC);
               Serial.print(":");
               Serial.println(AttributeValue[4], DEC);
-              duration[AttributeValue[0]-1] = (AttributeValue[5]*256) + AttributeValue[6];
-              volume[AttributeValue[0]-1] = (AttributeValue[7]*256) + AttributeValue[8];
+              duration[AttributeValue[0]-1] = (((unsigned char) AttributeValue[5]) * 256) + (unsigned char) AttributeValue[6];
+              volume[AttributeValue[0]-1] = (((unsigned char) AttributeValue[7]) * 256) + (unsigned char) AttributeValue[8];
               Serial.print("Volume : ");
               Serial.print(volume[AttributeValue[0]-1]);
               Serial.print("Duration : ");
@@ -945,8 +945,8 @@ void loop() {
               Serial.print(AttributeValue[3], DEC);
               Serial.print(":");
               Serial.println(AttributeValue[4], DEC);
-              duration[AttributeValue[0]-1] = (AttributeValue[5]*256) + AttributeValue[6];
-              volume[AttributeValue[0]-1] = (AttributeValue[7]*256) + AttributeValue[8];
+              duration[AttributeValue[0]-1] = (((unsigned char) AttributeValue[5]) * 256) + (unsigned char) AttributeValue[6];
+              volume[AttributeValue[0]-1] = (((unsigned char) AttributeValue[7]) * 256) + (unsigned char) AttributeValue[8];
               Serial.print("Volume : ");
               Serial.print(volume[AttributeValue[0]-1]);
               Serial.print("Duration : ");
@@ -962,8 +962,8 @@ void loop() {
               Serial.print(AttributeValue[3], DEC);
               Serial.print(":");
               Serial.println(AttributeValue[4], DEC);
-              duration[AttributeValue[0]-1] = (AttributeValue[5]*256) + AttributeValue[6];
-              volume[AttributeValue[0]-1] = (AttributeValue[7]*256) + AttributeValue[8];
+              duration[AttributeValue[0]-1] = (((unsigned char) AttributeValue[5]) * 256) + (unsigned char) AttributeValue[6];
+              volume[AttributeValue[0]-1] = (((unsigned char) AttributeValue[7]) * 256) + (unsigned char) AttributeValue[8];
               Serial.print("Volume : ");
               Serial.print(volume[AttributeValue[0]-1]);
               Serial.print("Duration : ");
@@ -979,8 +979,8 @@ void loop() {
               Serial.print(AttributeValue[3], DEC);
               Serial.print(":");
               Serial.println(AttributeValue[4], DEC);
-              duration[AttributeValue[0]-1] = (AttributeValue[5]*256) + AttributeValue[6];
-              volume[AttributeValue[0]-1] = (AttributeValue[7]*256) + AttributeValue[8];
+              duration[AttributeValue[0]-1] = (((unsigned char) AttributeValue[5]) * 256) + (unsigned char) AttributeValue[6];
+              volume[AttributeValue[0]-1] = (((unsigned char) AttributeValue[7]) * 256) + (unsigned char) AttributeValue[8];
               Serial.print("Volume : ");
               Serial.print(volume[AttributeValue[0]-1]);
               Serial.print("Duration : ");
@@ -996,8 +996,8 @@ void loop() {
               Serial.print(AttributeValue[3], DEC);
               Serial.print(":");
               Serial.println(AttributeValue[4], DEC);
-              duration[AttributeValue[0]-1] = (AttributeValue[5]*256) + AttributeValue[6];
-              volume[AttributeValue[0]-1] = (AttributeValue[7]*256) + AttributeValue[8];
+              duration[AttributeValue[0]-1] = (((unsigned char) AttributeValue[5]) * 256) + (unsigned char) AttributeValue[6];
+              volume[AttributeValue[0]-1] = (((unsigned char) AttributeValue[7]) * 256) + (unsigned char) AttributeValue[8];
               Serial.print("Volume : ");
               Serial.print(volume[AttributeValue[0]-1]);
               Serial.print("Duration : ");
@@ -1013,8 +1013,8 @@ void loop() {
               Serial.print(AttributeValue[3], DEC);
               Serial.print(":");
               Serial.println(AttributeValue[4], DEC);
-              duration[AttributeValue[0]-1] = (AttributeValue[5]*256) + AttributeValue[6];
-              volume[AttributeValue[0]-1] = (AttributeValue[7]*256) + AttributeValue[8];
+              duration[AttributeValue[0]-1] = (((unsigned char) AttributeValue[5]) * 256) + (unsigned char) AttributeValue[6];
+              volume[AttributeValue[0]-1] = (((unsigned char) AttributeValue[7]) * 256) + (unsigned char) AttributeValue[8];
               Serial.print("Volume : ");
               Serial.print(volume[AttributeValue[0]-1]);
               Serial.print("Duration : ");
@@ -1030,8 +1030,8 @@ void loop() {
               Serial.print(AttributeValue[3], DEC);
               Serial.print(":");
               Serial.println(AttributeValue[4], DEC);
-              duration[AttributeValue[0]-1] = (AttributeValue[5]*256) + AttributeValue[6];
-              volume[AttributeValue[0]-1] = (AttributeValue[7]*256) + AttributeValue[8];
+              duration[AttributeValue[0]-1] = (((unsigned char) AttributeValue[5]) * 256) + (unsigned char) AttributeValue[6];
+              volume[AttributeValue[0]-1] = (((unsigned char) AttributeValue[7]) * 256) + (unsigned char) AttributeValue[8];
               Serial.print("Volume : ");
               Serial.print(volume[AttributeValue[0]-1]);
               Serial.print("Duration : ");
@@ -1047,8 +1047,8 @@ void loop() {
               Serial.print(AttributeValue[3], DEC);
               Serial.print(":");
               Serial.println(AttributeValue[4], DEC);
-              duration[AttributeValue[0]-1] = (AttributeValue[5]*256) + AttributeValue[6];
-              volume[AttributeValue[0]-1] = (AttributeValue[7]*256) + AttributeValue[8];
+              duration[AttributeValue[0]-1] = (((unsigned char) AttributeValue[5]) * 256) + (unsigned char) AttributeValue[6];
+              volume[AttributeValue[0]-1] = (((unsigned char) AttributeValue[7]) * 256) + (unsigned char) AttributeValue[8];
               Serial.print("Volume : ");
               Serial.print(volume[AttributeValue[0]-1]);
               Serial.print("Duration : ");
@@ -1064,8 +1064,8 @@ void loop() {
               Serial.print(AttributeValue[3], DEC);
               Serial.print(":");
               Serial.println(AttributeValue[4], DEC);
-              duration[AttributeValue[0]-1] = (AttributeValue[5]*256) + AttributeValue[6];
-              volume[AttributeValue[0]-1] = (AttributeValue[7]*256) + AttributeValue[8];
+              duration[AttributeValue[0]-1] = (((unsigned char) AttributeValue[5]) * 256) + (unsigned char) AttributeValue[6];
+              volume[AttributeValue[0]-1] = (((unsigned char) AttributeValue[7]) * 256) + (unsigned char) AttributeValue[8];
               Serial.print("Volume : ");
               Serial.print(volume[AttributeValue[0]-1]);
               Serial.print("Duration : ");
@@ -1081,8 +1081,8 @@ void loop() {
               Serial.print(AttributeValue[3], DEC);
               Serial.print(":");
               Serial.println(AttributeValue[4], DEC);
-              duration[AttributeValue[0]-1] = (AttributeValue[5]*256) + AttributeValue[6];
-              volume[AttributeValue[0]-1] = (AttributeValue[7]*256) + AttributeValue[8];
+              duration[AttributeValue[0]-1] = (((unsigned char) AttributeValue[5]) * 256) + (unsigned char) AttributeValue[6];
+              volume[AttributeValue[0]-1] = (((unsigned char) AttributeValue[7]) * 256) + (unsigned char) AttributeValue[8];
               Serial.print("Volume : ");
               Serial.print(volume[AttributeValue[0]-1]);
               Serial.print("Duration : ");
@@ -1098,8 +1098,8 @@ void loop() {
               Serial.print(AttributeValue[3], DEC);
               Serial.print(":");
               Serial.println(AttributeValue[4], DEC);
-              duration[AttributeValue[0]-1] = (AttributeValue[5]*256) + AttributeValue[6];
-              volume[AttributeValue[0]-1] = (AttributeValue[7]*256) + AttributeValue[8];
+              duration[AttributeValue[0]-1] = (((unsigned char) AttributeValue[5]) * 256) + (unsigned char) AttributeValue[6];
+              volume[AttributeValue[0]-1] = (((unsigned char) AttributeValue[7]) * 256) + (unsigned char) AttributeValue[8];
               Serial.print("Volume : ");
               Serial.print(volume[AttributeValue[0]-1]);
               Serial.print("Duration : ");
@@ -1115,8 +1115,8 @@ void loop() {
               Serial.print(AttributeValue[3], DEC);
               Serial.print(":");
               Serial.println(AttributeValue[4], DEC);
-              duration[AttributeValue[0]-1] = (AttributeValue[5]*256) + AttributeValue[6];
-              volume[AttributeValue[0]-1] = (AttributeValue[7]*256) + AttributeValue[8];
+              duration[AttributeValue[0]-1] = (((unsigned char) AttributeValue[5]) * 256) + (unsigned char) AttributeValue[6];
+              volume[AttributeValue[0]-1] = (((unsigned char) AttributeValue[7]) * 256) + (unsigned char) AttributeValue[8];
               Serial.print("Volume : ");
               Serial.print(volume[AttributeValue[0]-1]);
               Serial.print("Duration : ");
@@ -1132,8 +1132,8 @@ void loop() {
               Serial.print(AttributeValue[3], DEC);
               Serial.print(":");
               Serial.println(AttributeValue[4], DEC);
-              duration[AttributeValue[0]-1] = (AttributeValue[5]*256) + AttributeValue[6];
-              volume[AttributeValue[0]-1] = (AttributeValue[7]*256) + AttributeValue[8];
+              duration[AttributeValue[0]-1] = (((unsigned char) AttributeValue[5]) * 256) + (unsigned char) AttributeValue[6];
+              volume[AttributeValue[0]-1] = (((unsigned char) AttributeValue[7]) * 256) + (unsigned char) AttributeValue[8];
               Serial.print("Volume : ");
               Serial.print(volume[AttributeValue[0]-1]);
               Serial.print("Duration : ");
@@ -1149,8 +1149,8 @@ void loop() {
               Serial.print(AttributeValue[3], DEC);
               Serial.print(":");
               Serial.println(AttributeValue[4], DEC);
-              duration[AttributeValue[0]-1] = (AttributeValue[5]*256) + AttributeValue[6];
-              volume[AttributeValue[0]-1] = (AttributeValue[7]*256) + AttributeValue[8];
+              duration[AttributeValue[0]-1] = (((unsigned char) AttributeValue[5]) * 256) + (unsigned char) AttributeValue[6];
+              volume[AttributeValue[0]-1] = (((unsigned char) AttributeValue[7]) * 256) + (unsigned char) AttributeValue[8];
               Serial.print("Volume : ");
               Serial.print(volume[AttributeValue[0]-1]);
               Serial.print("Duration : ");
@@ -1166,8 +1166,8 @@ void loop() {
               Serial.print(AttributeValue[3], DEC);
               Serial.print(":");
               Serial.println(AttributeValue[4], DEC);
-              duration[AttributeValue[0]-1] = (AttributeValue[5]*256) + AttributeValue[6];
-              volume[AttributeValue[0]-1] = (AttributeValue[7]*256) + AttributeValue[8];
+              duration[AttributeValue[0]-1] = (((unsigned char) AttributeValue[5]) * 256) + (unsigned char) AttributeValue[6];
+              volume[AttributeValue[0]-1] = (((unsigned char) AttributeValue[7]) * 256) + (unsigned char) AttributeValue[8];
               Serial.print("Volume : ");
               Serial.print(volume[AttributeValue[0]-1]);
               Serial.print("Duration : ");

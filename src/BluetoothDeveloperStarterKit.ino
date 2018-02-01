@@ -109,7 +109,7 @@ struct logEvent {
   unsigned char data[9];
 } logData[1000];
 
-uint16_t logDataCursor = 0;
+static uint16_t logDataCursor = 0;
 
 void setup() {
   pinMode(13, OUTPUT);
@@ -135,22 +135,22 @@ void setup() {
   digitalWrite(11, HIGH);
   digitalWrite(12, HIGH);
   digitalWrite(13, HIGH);
-  delay(50);              // wait for a second
+  delay(250);              // wait for a second
   digitalWrite(10, LOW);  // turn the Buzzer on (HIGH is the voltage level)
   digitalWrite(11, LOW);
   digitalWrite(12, LOW);
   digitalWrite(13, LOW);
-  delay(50);              // wait for a second
+  delay(250);              // wait for a second
   digitalWrite(10, HIGH);  // turn the Buzzer on (HIGH is the voltage level)
   digitalWrite(11, HIGH);
   digitalWrite(12, HIGH);
   digitalWrite(13, HIGH);
-  delay(50);              // wait for a second
+  delay(250);              // wait for a second
   digitalWrite(10, LOW);  // turn the Buzzer on (HIGH is the voltage level)
   digitalWrite(11, LOW);
   digitalWrite(12, LOW);
   digitalWrite(13, LOW);
-  delay(50);              // wait for a second
+  delay(250);              // wait for a second
   digitalWrite(10, HIGH);  // turn the Buzzer on (HIGH is the voltage level)
   digitalWrite(11, HIGH);
   digitalWrite(12, HIGH);
@@ -204,9 +204,6 @@ void setup() {
 
   //blePeripheral.addAttribute(LogService);
   blePeripheral.addAttribute(LogEvent);
-
-  blePeripheral.setAdvertisedServiceUuid("180F");
-
 
   Serial.println("attribute table constructed");
   // begin advertising

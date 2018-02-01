@@ -28,8 +28,8 @@ Bounce interruptButtonBouncer = Bounce();
 
 //Alarm IDs and corresponding volumes & durations
 AlarmId id[32];
-static uint32_t volume[28];
-static uint32_t duration[28];
+static uint16_t volume[28];
+static uint16_t duration[28];
 static uint16_t flowCounter = 0;
 
 // BLE objects

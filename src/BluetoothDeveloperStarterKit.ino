@@ -277,63 +277,63 @@ void serialEvent() {
 
 void sessionAlarm0() {
   //call a one time timer according to the value duration[1] with solenoidClose to be executed when this timer is triggered
-  id[28] = Alarm.timerOnce(duration[0]/1000, solenoidClose);
+  id[28] = Alarm.timerOnce(duration[0]*60, solenoidClose);
   solenoidOpen();
   Serial.println("session Alarm 0");
 }
 
 void sessionAlarm1() {
   //call a one time timer according to the value duration[1] with solenoidClose to be executed when this timer is triggered
-  id[28] = Alarm.timerOnce(duration[1]/1000, solenoidClose);
+  id[28] = Alarm.timerOnce(duration[1]*60, solenoidClose);
   solenoidOpen();
   Serial.println("session Alarm 1");
 }
 
 void sessionAlarm2() {
   //call a one time timer according to the value duration[1] with solenoidClose to be executed when this timer is triggered
-  id[28] = Alarm.timerOnce(duration[2]/1000, solenoidClose);
+  id[28] = Alarm.timerOnce(duration[2]*60, solenoidClose);
   solenoidOpen();
   Serial.println("session Alarm 2");
 }
 
 void sessionAlarm3() {
   //call a one time timer according to the value duration[1] with solenoidClose to be executed when this timer is triggered
-  id[28] = Alarm.timerOnce(duration[3]/1000, solenoidClose);
+  id[28] = Alarm.timerOnce(duration[3]*60, solenoidClose);
   solenoidOpen();
   Serial.println("session Alarm 3");
 }
 
 void sessionAlarm4() {
   //call a one time timer according to the value duration[1] with solenoidClose to be executed when this timer is triggered
-  id[28] = Alarm.timerOnce(duration[4]/1000, solenoidClose);
+  id[28] = Alarm.timerOnce(duration[4]*60, solenoidClose);
   solenoidOpen();
   Serial.println("session Alarm 4");
 }
 
 void sessionAlarm5() {
   //call a one time timer according to the value duration[1] with solenoidClose to be executed when this timer is triggered
-  id[28] = Alarm.timerOnce(duration[5]/1000, solenoidClose);
+  id[28] = Alarm.timerOnce(duration[5]*60, solenoidClose);
   solenoidOpen();
   Serial.println("session Alarm 5");
 }
 
 void sessionAlarm6() {
   //call a one time timer according to the value duration[1] with solenoidClose to be executed when this timer is triggered
-  id[28] = Alarm.timerOnce(duration[6]/1000, solenoidClose);
+  id[28] = Alarm.timerOnce(duration[6]*60, solenoidClose);
   solenoidOpen();
   Serial.println("session Alarm 6");
 }
 
 void sessionAlarm7() {
   //call a one time timer according to the value duration[1] with solenoidClose to be executed when this timer is triggered
-  id[28] = Alarm.timerOnce(duration[7]/1000, solenoidClose);
+  id[28] = Alarm.timerOnce(duration[7]*60, solenoidClose);
   solenoidOpen();
   Serial.println("session Alarm 7");
 }
 
 void sessionAlarm8() {
   //call a one time timer according to the value duration[1] with solenoidClose to be executed when this timer is triggered
-  id[28] = Alarm.timerOnce(duration[8]/1000, solenoidClose);
+  id[28] = Alarm.timerOnce(duration[8]*60, solenoidClose);
   solenoidOpen();
   Serial.println("session Alarm 8");
 }
@@ -341,133 +341,133 @@ void sessionAlarm8() {
 void sessionAlarm9() {
   //call a one time timer according to the value duration[1] with solenoidClose to be executed when this timer is triggered
   Serial.println("session Alarm 9");
-  id[28] = Alarm.timerOnce(duration[9]/1000, solenoidClose);
+  id[28] = Alarm.timerOnce(duration[9]*60, solenoidClose);
   solenoidOpen();
 }
 
 void sessionAlarm10() {
   //call a one time timer according to the value duration[1] with solenoidClose to be executed when this timer is triggered
   Serial.println("session Alarm 10");
-  id[28] = Alarm.timerOnce(duration[10]/1000, solenoidClose);
+  id[28] = Alarm.timerOnce(duration[10]*60, solenoidClose);
   solenoidOpen();
 }
 
 void sessionAlarm11() {
   //call a one time timer according to the value duration[1] with solenoidClose to be executed when this timer is triggered
   Serial.println("session Alarm 11");
-  id[28] = Alarm.timerOnce(duration[11]/1000, solenoidClose);
+  id[28] = Alarm.timerOnce(duration[11]*60, solenoidClose);
   solenoidOpen();
 }
 
 void sessionAlarm12() {
   //call a one time timer according to the value duration[1] with solenoidClose to be executed when this timer is triggered
   Serial.println("session Alarm 12");
-  id[28] = Alarm.timerOnce(duration[12]/1000, solenoidClose);
+  id[28] = Alarm.timerOnce(duration[12]*60, solenoidClose);
   solenoidOpen();
 }
 
 void sessionAlarm13() {
   //call a one time timer according to the value duration[1] with solenoidClose to be executed when this timer is triggered
   Serial.println("session Alarm 13");
-  id[28] = Alarm.timerOnce(duration[13]/1000, solenoidClose);
+  id[28] = Alarm.timerOnce(duration[13]*60, solenoidClose);
   solenoidOpen();
 }
 
 void sessionAlarm14() {
   //call a one time timer according to the value duration[1] with solenoidClose to be executed when this timer is triggered
   Serial.println("session Alarm 14");
-  id[28] = Alarm.timerOnce(duration[14]/1000, solenoidClose);
+  id[28] = Alarm.timerOnce(duration[14]*60, solenoidClose);
   solenoidOpen();
 }
 
 void sessionAlarm15() {
   //call a one time timer according to the value duration[1] with solenoidClose to be executed when this timer is triggered
   Serial.println("session Alarm 15");
-  id[28] = Alarm.timerOnce(duration[15]/1000, solenoidClose);
+  id[28] = Alarm.timerOnce(duration[15]*60, solenoidClose);
   solenoidOpen();
 }
 
 void sessionAlarm16() {
   //call a one time timer according to the value duration[1] with solenoidClose to be executed when this timer is triggered
   Serial.println("session Alarm 16");
-  id[28] = Alarm.timerOnce(duration[16]/1000, solenoidClose);
+  id[28] = Alarm.timerOnce(duration[16]*60, solenoidClose);
   solenoidOpen();
 }
 
 void sessionAlarm17() {
   //call a one time timer according to the value duration[1] with solenoidClose to be executed when this timer is triggered
   Serial.println("session Alarm 17");
-  id[28] = Alarm.timerOnce(duration[17]/1000, solenoidClose);
+  id[28] = Alarm.timerOnce(duration[17]*60, solenoidClose);
   solenoidOpen();
 }
 
 void sessionAlarm18() {
   //call a one time timer according to the value duration[1] with solenoidClose to be executed when this timer is triggered
   Serial.println("session Alarm 18");
-  id[28] = Alarm.timerOnce(duration[18]/1000, solenoidClose);
+  id[28] = Alarm.timerOnce(duration[18]*60, solenoidClose);
   solenoidOpen();
 }
 
 void sessionAlarm19() {
   //call a one time timer according to the value duration[1] with solenoidClose to be executed when this timer is triggered
   Serial.println("session Alarm 19");
-  id[28] = Alarm.timerOnce(duration[19]/1000, solenoidClose);
+  id[28] = Alarm.timerOnce(duration[19]*60, solenoidClose);
   solenoidOpen();
 }
 
 void sessionAlarm20() {
   //call a one time timer according to the value duration[1] with solenoidClose to be executed when this timer is triggered
   Serial.println("session Alarm 20");
-  id[28] = Alarm.timerOnce(duration[20]/1000, solenoidClose);
+  id[28] = Alarm.timerOnce(duration[20]*60, solenoidClose);
   solenoidOpen();
 }
 
 void sessionAlarm21() {
   //call a one time timer according to the value duration[1] with solenoidClose to be executed when this timer is triggered
   Serial.println("session Alarm 21");
-  id[28] = Alarm.timerOnce(duration[21]/1000, solenoidClose);
+  id[28] = Alarm.timerOnce(duration[21]*60, solenoidClose);
   solenoidOpen();
 }
 
 void sessionAlarm22() {
   //call a one time timer according to the value duration[1] with solenoidClose to be executed when this timer is triggered
   Serial.println("session Alarm 22");
-  id[28] = Alarm.timerOnce(duration[22]/1000, solenoidClose);
+  id[28] = Alarm.timerOnce(duration[22]*60, solenoidClose);
   solenoidOpen();
 }
 
 void sessionAlarm23() {
   //call a one time timer according to the value duration[1] with solenoidClose to be executed when this timer is triggered
   Serial.println("session Alarm 23");
-  id[28] = Alarm.timerOnce(duration[23]/1000, solenoidClose);
+  id[28] = Alarm.timerOnce(duration[23]*60, solenoidClose);
   solenoidOpen();
 }
 
 void sessionAlarm24() {
   //call a one time timer according to the value duration[1] with solenoidClose to be executed when this timer is triggered
   Serial.println("session Alarm 24");
-  id[28] = Alarm.timerOnce(duration[24]/1000, solenoidClose);
+  id[28] = Alarm.timerOnce(duration[24]*60, solenoidClose);
   solenoidOpen();
 }
 
 void sessionAlarm25() {
   //call a one time timer according to the value duration[1] with solenoidClose to be executed when this timer is triggered
   Serial.println("session Alarm 25");
-  id[28] = Alarm.timerOnce(duration[25]/1000, solenoidClose);
+  id[28] = Alarm.timerOnce(duration[25]*60, solenoidClose);
   solenoidOpen();
 }
 
 void sessionAlarm26() {
   //call a one time timer according to the value duration[1] with solenoidClose to be executed when this timer is triggered
   Serial.println("session Alarm 26");
-  id[28] = Alarm.timerOnce(duration[26]/1000, solenoidClose);
+  id[28] = Alarm.timerOnce(duration[26]*60, solenoidClose);
   solenoidOpen();
 }
 
 void sessionAlarm27() {
   //call a one time timer according to the value duration[1] with solenoidClose to be executed when this timer is triggered
   Serial.println("session Alarm 27");
-  id[28] = Alarm.timerOnce(duration[27]/1000, solenoidClose);
+  id[28] = Alarm.timerOnce(duration[27]*60, solenoidClose);
   solenoidOpen();
 }
 
@@ -584,7 +584,7 @@ void loop() {
          AttributeValue[copyingIndex] = NULL;
 
          Serial.print("LogService_EventCharacteristic written. Characteristic will be set to logData of ");
-         Serial.print(((unsigned char) AttributeValue[0]) * 256) + (unsigned char) AttributeValue[1], DEC);
+         Serial.print((((unsigned char) AttributeValue[0]) * 256) + (unsigned char) AttributeValue[1], DEC);
          Serial.println(".");
 
          const unsigned char logDataBuffer[15] = "1234567890ABCD";

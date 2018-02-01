@@ -55,12 +55,14 @@ char AttributeValue[32];
 
 // Services and Characteristics
 //Pebble Services and Characteristics
-BLEService BatteryService("6E521ABEB56F4B058465A1CEE41BB141");
+BLEService Pebble_Service("12345678123412341234123456789ABC");
+
+//BLEService BatteryService("6E521ABEB56F4B058465A1CEE41BB141");
 BLECharacteristic BatteryService_BatteryLevel("6E52C8E5B56F4B058465A1CEE41BB141", BatteryService_BatteryLevel_props, 1);
 //Total Length = 1 byte
 //1 byte = uint8 Level
 
-BLEService CurrentTimeService("6E52A9DAB56F4B058465A1CEE41BB141");
+//BLEService CurrentTimeService("6E52A9DAB56F4B058465A1CEE41BB141");
 BLECharacteristic CurrentTimeService_CurrentTime("6E52AC46B56F4B058465A1CEE41BB141", CurrentTimeService_CurrentTime_props, 7);
 //Total Length = 7 bytes
 //1 byte = uint8 hours
@@ -70,12 +72,12 @@ BLECharacteristic CurrentTimeService_CurrentTime("6E52AC46B56F4B058465A1CEE41BB1
 //1 byte = uint8 Months
 //2 byte = uint16 Years
 
-BLEService PotsService("6E529F14B56F4B058465A1CEE41BB141");
+//BLEService PotsService("6E529F14B56F4B058465A1CEE41BB141");
 BLECharacteristic PotsService_Pots("6E52E386B56F4B058465A1CEE41BB141", PotsService_Pots_props, 1);
 //1 byte = Total Length
 //1 byte = uint8 Number of Pots
 
-BLEService TimePointService("6E52214FB56F4B058465A1CEE41BB141");
+//BLEService TimePointService("6E52214FB56F4B058465A1CEE41BB141");
 BLECharacteristic TimePointService_NewPoint("6E529480B56F4B058465A1CEE41BB141", TimePointService_NewPoint_props, 9);
 //Total Length = 9 bytes
 //1 byte = uint8 Index (Time Point Number)
@@ -86,12 +88,12 @@ BLECharacteristic TimePointService_NewPoint("6E529480B56F4B058465A1CEE41BB141", 
 //2 bytes = uint16 Duration
 //2 bytes = uint16 Volume
 
-BLEService ValveControllerService("6E52C714B56F4B058465A1CEE41BB141");
+//BLEService ValveControllerService("6E52C714B56F4B058465A1CEE41BB141");
 BLECharacteristic ValveControllerService_Command("6E52CFDBB56F4B058465A1CEE41BB141", ValveControllerService_Command_props, 1);
 //Total Length = 1 byte
 //1 byte = uint8 CommandCode
 
-BLEService LogService("6E52ABCDB56F4B058465A1CEE41BB141");
+//BLEService LogService("6E52ABCDB56F4B058465A1CEE41BB141");
 BLECharacteristic LogService_EventCharacteristic("6E521234B56F4B058465A1CEE41BB141", LogService_EventCharacteristic_props, 15);
 //Total Length = 15 bytes
 //4 bytes : long time
@@ -184,22 +186,23 @@ void setup() {
 
 
 // add services and characteristics
-  blePeripheral.addAttribute(CurrentTimeService);
+  blePeripheral.addAttribute(Pebble_Service);
+  //blePeripheral.addAttribute(CurrentTimeService);
   blePeripheral.addAttribute(CurrentTimeService_CurrentTime);
 
-  blePeripheral.addAttribute(PotsService);
+  //blePeripheral.addAttribute(PotsService);
   blePeripheral.addAttribute(PotsService_Pots);
 
-  blePeripheral.addAttribute(BatteryService);
+  //blePeripheral.addAttribute(BatteryService);
   blePeripheral.addAttribute(BatteryService_BatteryLevel);
 
-  blePeripheral.addAttribute(TimePointService);
+  //blePeripheral.addAttribute(TimePointService);
   blePeripheral.addAttribute(TimePointService_NewPoint);
 
-  blePeripheral.addAttribute(ValveControllerService);
+  //blePeripheral.addAttribute(ValveControllerService);
   blePeripheral.addAttribute(ValveControllerService_Command);
 
-  blePeripheral.addAttribute(LogService);
+  //blePeripheral.addAttribute(LogService);
   blePeripheral.addAttribute(LogService_EventCharacteristic);
 
   blePeripheral.setAdvertisedServiceUuid("180F");

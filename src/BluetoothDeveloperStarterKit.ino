@@ -42,12 +42,12 @@ char device_name[] = "Pebble";
 // Characteristic Properties
 
 //Pebble Characteristic Properties
-unsigned char CurrentTimeService_CurrentTime_props = BLERead | BLEWrite | 0;
-unsigned char BatteryService_BatteryLevel_props = BLERead | 0;
-unsigned char PotsService_Pots_props = BLERead | BLEWrite | 0;
-unsigned char TimePointService_NewPoint_props = BLEWrite | 0;
-unsigned char ValveControllerService_Command_props = BLEWrite | 0;
-unsigned char LogService_EventCharacteristic_props = BLEWrite | BLERead | 0;
+unsigned char CurrentTime_props = BLERead | BLEWrite | 0;
+unsigned char BatteryLevel_props = BLERead | 0;
+unsigned char Pots_props = BLERead | BLEWrite | 0;
+unsigned char NewTimePoint_props = BLEWrite | 0;
+unsigned char ValveCommand_props = BLEWrite | 0;
+unsigned char LogEvent_props = BLEWrite | BLERead | 0;
 //unsigned char LogService_ReadIndex_props = BLEWrite | 0;
 
 
@@ -55,13 +55,15 @@ char AttributeValue[32];
 
 // Services and Characteristics
 //Pebble Services and Characteristics
-BLEService BatteryService("6E521ABEB56F4B058465A1CEE41BB141");
-BLECharacteristic BatteryService_BatteryLevel("6E52C8E5B56F4B058465A1CEE41BB141", BatteryService_BatteryLevel_props, 1);
+BLEService PebbleService("12345678123412341234123456789ABC");
+
+//BLEService BatteryService("6E521ABEB56F4B058465A1CEE41BB141");
+BLECharacteristic BatteryLevel("6E52C8E5B56F4B058465A1CEE41BB141", BatteryLevel_props, 1);
 //Total Length = 1 byte
 //1 byte = uint8 Level
 
-BLEService CurrentTimeService("6E52A9DAB56F4B058465A1CEE41BB141");
-BLECharacteristic CurrentTimeService_CurrentTime("6E52AC46B56F4B058465A1CEE41BB141", CurrentTimeService_CurrentTime_props, 7);
+//BLEService CurrentTimeService("6E52A9DAB56F4B058465A1CEE41BB141");
+BLECharacteristic CurrentTime("6E52AC46B56F4B058465A1CEE41BB141", CurrentTime_props, 7);
 //Total Length = 7 bytes
 //1 byte = uint8 hours
 //1 byte = uint8 minutes
@@ -70,13 +72,13 @@ BLECharacteristic CurrentTimeService_CurrentTime("6E52AC46B56F4B058465A1CEE41BB1
 //1 byte = uint8 Months
 //2 byte = uint16 Years
 
-BLEService PotsService("6E529F14B56F4B058465A1CEE41BB141");
-BLECharacteristic PotsService_Pots("6E52E386B56F4B058465A1CEE41BB141", PotsService_Pots_props, 1);
+//BLEService PotsService("6E529F14B56F4B058465A1CEE41BB141");
+BLECharacteristic Pots("6E52E386B56F4B058465A1CEE41BB141", Pots_props, 1);
 //1 byte = Total Length
 //1 byte = uint8 Number of Pots
 
-BLEService TimePointService("6E52214FB56F4B058465A1CEE41BB141");
-BLECharacteristic TimePointService_NewPoint("6E529480B56F4B058465A1CEE41BB141", TimePointService_NewPoint_props, 9);
+//BLEService TimePointService("6E52214FB56F4B058465A1CEE41BB141");
+BLECharacteristic NewTimePoint("6E529480B56F4B058465A1CEE41BB141", NewTimePoint_props, 9);
 //Total Length = 9 bytes
 //1 byte = uint8 Index (Time Point Number)
 //1 byte = uint8 Day of the Week
@@ -86,13 +88,13 @@ BLECharacteristic TimePointService_NewPoint("6E529480B56F4B058465A1CEE41BB141", 
 //2 bytes = uint16 Duration
 //2 bytes = uint16 Volume
 
-BLEService ValveControllerService("6E52C714B56F4B058465A1CEE41BB141");
-BLECharacteristic ValveControllerService_Command("6E52CFDBB56F4B058465A1CEE41BB141", ValveControllerService_Command_props, 1);
+//BLEService ValveControllerService("6E52C714B56F4B058465A1CEE41BB141");
+BLECharacteristic ValveCommand("6E52CFDBB56F4B058465A1CEE41BB141", ValveCommand_props, 1);
 //Total Length = 1 byte
 //1 byte = uint8 CommandCode
 
-BLEService LogService("6E52ABCDB56F4B058465A1CEE41BB141");
-BLECharacteristic LogService_EventCharacteristic("6E521234B56F4B058465A1CEE41BB141", LogService_EventCharacteristic_props, 15);
+//BLEService LogService("6E52ABCDB56F4B058465A1CEE41BB141");
+BLECharacteristic LogEvent("6E521234B56F4B058465A1CEE41BB141", LogEvent_props, 15);
 //Total Length = 15 bytes
 //4 bytes : long time
 //1 byte : code
@@ -107,7 +109,7 @@ struct logEvent {
   unsigned char data[9];
 } logData[1000];
 
-uint16_t logDataCursor = 0;
+static uint16_t logDataCursor = 0;
 
 void setup() {
   pinMode(13, OUTPUT);
@@ -133,22 +135,22 @@ void setup() {
   digitalWrite(11, HIGH);
   digitalWrite(12, HIGH);
   digitalWrite(13, HIGH);
-  delay(50);              // wait for a second
+  delay(250);              // wait for a second
   digitalWrite(10, LOW);  // turn the Buzzer on (HIGH is the voltage level)
   digitalWrite(11, LOW);
   digitalWrite(12, LOW);
   digitalWrite(13, LOW);
-  delay(50);              // wait for a second
+  delay(250);              // wait for a second
   digitalWrite(10, HIGH);  // turn the Buzzer on (HIGH is the voltage level)
   digitalWrite(11, HIGH);
   digitalWrite(12, HIGH);
   digitalWrite(13, HIGH);
-  delay(50);              // wait for a second
+  delay(250);              // wait for a second
   digitalWrite(10, LOW);  // turn the Buzzer on (HIGH is the voltage level)
   digitalWrite(11, LOW);
   digitalWrite(12, LOW);
   digitalWrite(13, LOW);
-  delay(50);              // wait for a second
+  delay(250);              // wait for a second
   digitalWrite(10, HIGH);  // turn the Buzzer on (HIGH is the voltage level)
   digitalWrite(11, HIGH);
   digitalWrite(12, HIGH);
@@ -184,32 +186,30 @@ void setup() {
 
 
 // add services and characteristics
-  blePeripheral.addAttribute(CurrentTimeService);
-  blePeripheral.addAttribute(CurrentTimeService_CurrentTime);
+  blePeripheral.addAttribute(PebbleService);
+  //blePeripheral.addAttribute(CurrentTimeService);
+  blePeripheral.addAttribute(CurrentTime);
 
-  blePeripheral.addAttribute(PotsService);
-  blePeripheral.addAttribute(PotsService_Pots);
+  //blePeripheral.addAttribute(PotsService);
+  blePeripheral.addAttribute(Pots);
 
-  blePeripheral.addAttribute(BatteryService);
-  blePeripheral.addAttribute(BatteryService_BatteryLevel);
+  //blePeripheral.addAttribute(BatteryService);
+  blePeripheral.addAttribute(BatteryLevel);
 
-  blePeripheral.addAttribute(TimePointService);
-  blePeripheral.addAttribute(TimePointService_NewPoint);
+  //blePeripheral.addAttribute(TimePointService);
+  blePeripheral.addAttribute(NewTimePoint);
 
-  blePeripheral.addAttribute(ValveControllerService);
-  blePeripheral.addAttribute(ValveControllerService_Command);
+  //blePeripheral.addAttribute(ValveControllerService);
+  blePeripheral.addAttribute(ValveCommand);
 
-  blePeripheral.addAttribute(LogService);
-  blePeripheral.addAttribute(LogService_EventCharacteristic);
-
-  blePeripheral.setAdvertisedServiceUuid("180F");
-
+  //blePeripheral.addAttribute(LogService);
+  blePeripheral.addAttribute(LogEvent);
 
   Serial.println("attribute table constructed");
   // begin advertising
   blePeripheral.begin();
   Serial.println("Advertising");
-  BatteryService_BatteryLevel.setValue(batteryLevelPtr);
+  BatteryLevel.setValue(batteryLevelPtr);
   //LogService_EventCharacteristic.setValue(logEventPtr);
 }
 
@@ -487,7 +487,11 @@ void loop() {
     Serial.print("Connected to central: ");
     Serial.println(central.address());
 
-
+    //Recording log event sample.
+    logData[logDataCursor].eventCode = 0x11;
+    logData[logDataCursor].eventTime = now() - 19800;
+    logData[logDataCursor].data = {"mac-id"};
+    //
 
     // while the central is still connected to peripheral:
     while (central.connected()) {
@@ -500,7 +504,7 @@ void loop() {
         ////////////////////
         //Time Synchronization Service
         ////////////////////
-        if (CurrentTimeService_CurrentTime.written()) {
+        if (CurrentTime.written()) {
         // application logic for handling WRITE or WRITE_WITHOUT_RESPONSE on characteristic Current Time Service Current Time goes here
          digitalWrite(13, HIGH);
          delay(50);              // wait for a second
@@ -508,13 +512,13 @@ void loop() {
          delay(50);              // wait for a second
 
          uint16_t copyingIndex;
-         for(copyingIndex = 0; copyingIndex<CurrentTimeService_CurrentTime.valueLength(); copyingIndex++)
+         for(copyingIndex = 0; copyingIndex<CurrentTime.valueLength(); copyingIndex++)
          {
-           AttributeValue[copyingIndex] = CurrentTimeService_CurrentTime.value()[copyingIndex];
+           AttributeValue[copyingIndex] = CurrentTime.value()[copyingIndex];
          }
          AttributeValue[copyingIndex] = NULL;
 
-         Serial.println("CurrentTimeService_CurrentTime.written()");
+         Serial.println("CurrentTime.written()");
          Serial.print(AttributeValue[0], DEC);
          Serial.print(",");
          Serial.print(AttributeValue[1], DEC);
@@ -552,16 +556,16 @@ void loop() {
         ////////////////////
         //Pots Service
         ////////////////////
-        if (PotsService_Pots.written()) {
+        if (Pots.written()) {
         // application logic for handling WRITE or WRITE_WITHOUT_RESPONSE on characteristic Pots goes here
          uint16_t copyingIndex;
-         for(copyingIndex = 0; copyingIndex<PotsService_Pots.valueLength(); copyingIndex++)
+         for(copyingIndex = 0; copyingIndex<Pots.valueLength(); copyingIndex++)
          {
-           AttributeValue[copyingIndex] = PotsService_Pots.value()[copyingIndex];
+           AttributeValue[copyingIndex] = Pots.value()[copyingIndex];
          }
          AttributeValue[copyingIndex] = NULL;
 
-         Serial.println("PotsService_Pots.written()");
+         Serial.println("Pots.written()");
          Serial.print(AttributeValue[0], DEC);
          Serial.println(".");
          digitalWrite(13, HIGH);
@@ -574,25 +578,29 @@ void loop() {
         ////////////////////
         //Log Service
         ////////////////////
-        if (LogService_EventCharacteristic.written()) {
+        if (LogEvent.written()) {
         // application logic for handling WRITE or WRITE_WITHOUT_RESPONSE on characteristic Pots goes here
          uint16_t copyingIndex;
-         for(copyingIndex = 0; copyingIndex<LogService_EventCharacteristic.valueLength(); copyingIndex++)
+         for(copyingIndex = 0; copyingIndex<LogEvent.valueLength(); copyingIndex++)
          {
-           AttributeValue[copyingIndex] = LogService_EventCharacteristic.value()[copyingIndex];
+           AttributeValue[copyingIndex] = LogEvent.value()[copyingIndex];
          }
          AttributeValue[copyingIndex] = NULL;
 
          Serial.print("LogService_EventCharacteristic written. Characteristic will be set to logData of ");
          Serial.print((((unsigned char) AttributeValue[0]) * 256) + (unsigned char) AttributeValue[1], DEC);
          Serial.println(".");
-
-         unsigned long eventTime = now() - 19800; //This time has to be in GMT. IST - 5hours30minutes gives GMT.
+         uint16_t serialNumber = (((unsigned char) AttributeValue[0]) * 256) + (unsigned char) AttributeValue[1];
+         unsigned long eventTime = logData[serialNumber].eventTime - 19800; //This time has to be in GMT. IST - 5hours30minutes gives GMT.
          unsigned char time[4];
          time[0] = (unsigned char)(eventTime >> 24);
          time[1] = (unsigned char)(eventTime >> 16);
          time[2] = (unsigned char)(eventTime >> 8);
          time[3] = (unsigned char)(eventTime);
+         const unsigned char logEvent[15] = {logData[serialNumber].eventCode, time[0],time[1],time[2],time[3],'5','6','7','8','9','A','B','C','D','E'};
+
+         LogEvent.setValue(logEvent, 15);
+
          Serial.println(eventTime, DEC);
          Serial.print(time[0], DEC);
          Serial.print(" ");
@@ -603,7 +611,7 @@ void loop() {
          Serial.println(time[3], DEC);
          const unsigned char logEvent[15] = {time[0],time[1],time[2],time[3],'5','6','7','8','9','A','B','C','D','E','F'};
 
-         LogService_EventCharacteristic.setValue(logEvent, 15);
+         LogEvent.setValue(logEvent, 15);
          digitalWrite(13, HIGH);
          delay(50);              // wait for a second
          digitalWrite(13, LOW);
@@ -614,16 +622,16 @@ void loop() {
         ////////////////////
         //Valve Controller Commands
         ////////////////////
-        if (ValveControllerService_Command.written()) {
+        if (ValveCommand.written()) {
         // application logic for handling WRITE or WRITE_WITHOUT_RESPONSE on characteristic Pots goes here
          uint16_t copyingIndex;
-         for(copyingIndex = 0; copyingIndex<ValveControllerService_Command.valueLength(); copyingIndex++)
+         for(copyingIndex = 0; copyingIndex<ValveCommand.valueLength(); copyingIndex++)
          {
-           AttributeValue[copyingIndex] = ValveControllerService_Command.value()[copyingIndex];
+           AttributeValue[copyingIndex] = ValveCommand.value()[copyingIndex];
          }
          AttributeValue[copyingIndex] = NULL;
 
-         Serial.println("ValveControllerService_Command.written()");
+         Serial.println("ValveCommand.written()");
          switch(AttributeValue[0])
          {
           case 1:
@@ -664,13 +672,13 @@ void loop() {
         ////////////////////
         //Time Points Service
         ////////////////////
-        if (TimePointService_NewPoint.written()) {
+        if (NewTimePoint.written()) {
         // application logic for handling WRITE or WRITE_WITHOUT_RESPONSE on characteristic Current Time Service Current Time goes here
          sprintf(AttributeValue,"%c",NULL);
          uint16_t copyingIndex;
-         for(copyingIndex = 0; copyingIndex<TimePointService_NewPoint.valueLength(); copyingIndex++)
+         for(copyingIndex = 0; copyingIndex<NewTimePoint.valueLength(); copyingIndex++)
          {
-           AttributeValue[copyingIndex] = TimePointService_NewPoint.value()[copyingIndex];
+           AttributeValue[copyingIndex] = NewTimePoint.value()[copyingIndex];
          }
          AttributeValue[copyingIndex] = NULL;
          //strncpy(AttributeValue,(char*)TimePointService_NewPoint.value(),TimePointService_NewPoint.valueLength());
@@ -1203,7 +1211,7 @@ void loop() {
         ////////////////////
         //Battery Service
         ////////////////////
-        if (BatteryService_BatteryLevel.read()) {
+        if (BatteryLevel.read()) {
           Serial.println("Battery Level Read");
         }
     }

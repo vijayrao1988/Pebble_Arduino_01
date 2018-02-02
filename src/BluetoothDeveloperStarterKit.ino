@@ -487,7 +487,11 @@ void loop() {
     Serial.print("Connected to central: ");
     Serial.println(central.address());
 
-
+    //Recording log event sample.
+    logData[logDataCursor].eventCode = 0x11;
+    logData[logDataCursor].eventTime = now() - 19800;
+    logData[logDataCursor].data = {"mac-id"};
+    //
 
     // while the central is still connected to peripheral:
     while (central.connected()) {
@@ -586,13 +590,17 @@ void loop() {
          Serial.print("LogService_EventCharacteristic written. Characteristic will be set to logData of ");
          Serial.print((((unsigned char) AttributeValue[0]) * 256) + (unsigned char) AttributeValue[1], DEC);
          Serial.println(".");
-
-         unsigned long eventTime = now() - 19800; //This time has to be in GMT. IST - 5hours30minutes gives GMT.
+         uint16_t serialNumber = (((unsigned char) AttributeValue[0]) * 256) + (unsigned char) AttributeValue[1];
+         unsigned long eventTime = logData[serialNumber].eventTime - 19800; //This time has to be in GMT. IST - 5hours30minutes gives GMT.
          unsigned char time[4];
          time[0] = (unsigned char)(eventTime >> 24);
          time[1] = (unsigned char)(eventTime >> 16);
          time[2] = (unsigned char)(eventTime >> 8);
          time[3] = (unsigned char)(eventTime);
+         const unsigned char logEvent[15] = {logData[serialNumber].eventCode, time[0],time[1],time[2],time[3],'5','6','7','8','9','A','B','C','D','E'};
+
+         LogEvent.setValue(logEvent, 15);
+
          Serial.println(eventTime, DEC);
          Serial.print(time[0], DEC);
          Serial.print(" ");

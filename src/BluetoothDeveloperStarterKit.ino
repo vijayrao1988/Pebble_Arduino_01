@@ -30,7 +30,7 @@ Bounce interruptButtonBouncer = Bounce();
 AlarmId id[32];
 static uint16_t volume[28];
 static uint16_t duration[28];
-static uint16_t flowCounter = 0;
+static uint16_t flowCounter = 0,countStop=0, countStart=0;
 
 // BLE objects
 BLEPeripheral blePeripheral;
@@ -106,8 +106,8 @@ BLECharacteristic LogEvent("6E521234B56F4B058465A1CEE41BB141", LogEvent_props, 1
 struct logEvent {
   unsigned char eventCode;
   unsigned long eventTime;
-  unsigned char data[9];
-} logData[1000];
+  unsigned char data[12];
+} logData[100];
 
 static uint16_t logDataCursor = 0;
 
@@ -161,21 +161,21 @@ void setup() {
   digitalWrite(12, LOW);
   digitalWrite(13, LOW);
 
-  solenoidOpen();
-  delay(2000);
-  solenoidClose();
-  delay(2000);
+  //solenoidOpen();
+  //delay(2000);
+  //solenoidClose();
+  //delay(2000);
 
-  solenoidOpen();
-  delay(2000);
-  solenoidClose();
-  delay(2000);
+  //solenoidOpen();
+  //delay(2000);
+  //solenoidClose();
+  //delay(2000);
 
-  solenoidClose();
+  //solenoidClose();
 
   char batteryLevel = 100;
   const char * batteryLevelPtr = &batteryLevel;
-  const unsigned char logEvent[15] = {'1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
+//  const unsigned char logEventData[15] = {'1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
   //const unsigned char * logEventPtr = &logEvent;
   Serial.begin(115200);
   //while (! Serial); // Wait until Serial is ready
@@ -232,6 +232,19 @@ void solenoidClose() {
    digitalWrite(solenoidN, HIGH);
 }
 
+void solenoidCloseLog()
+{
+  logData[logDataCursor].eventCode = 0x12;
+  logData[logDataCursor].eventTime = now();
+  logData[logDataCursor].data[8] = (unsigned char)(flowCounter/256);
+  logData[logDataCursor].data[9] = (unsigned char)(flowCounter % 256);
+  logDataCursor++;
+  solenoidClose();
+  Serial.print("flowCounter = ");
+  Serial.println(flowCounter, DEC);
+  flowCounter = 0;
+}
+
 void beep() {
   //PM.wakeFromDoze();
   noInterrupts();
@@ -275,65 +288,156 @@ void serialEvent() {
   }
 }
 
+void waterDischarge(uint16_t volume, uint16_t duration)
+{
+  if(volume==0)
+    {
+     id[28] = Alarm.timerOnce(duration*60, solenoidCloseLog);
+     flowCounter = 0;
+     }
+  else
+  {
+    if(volume>=2000)
+   {
+      countStop = volume/1.3;
+      Serial.print("countStop= ");
+      Serial.println(countStop, DEC);
+      countStart=1;
+      flowCounter=0;
+    }
+   else
+    {
+      countStop = volume/1.4;
+      Serial.print("countStop = ");
+      Serial.println(countStop, DEC);
+      countStart=1;
+      flowCounter=0;
+    }
+   }
+ }
+
 void sessionAlarm0() {
   //call a one time timer according to the value duration[1] with solenoidClose to be executed when this timer is triggered
-  id[28] = Alarm.timerOnce(duration[0]*60, solenoidClose);
+  waterDischarge(volume[0],duration[0]);
+  logData[logDataCursor].eventCode = 0x11;
+  logData[logDataCursor].eventTime = now();
+  logData[logDataCursor].data[6] = (unsigned char) (duration[0] / 256);
+  logData[logDataCursor].data[7] = (unsigned char) (duration[0] % 256);
+  logData[logDataCursor].data[8] = (unsigned char) (volume[0] / 256);
+  logData[logDataCursor].data[9] = (unsigned char) (volume[0] % 256);
+  logDataCursor++;
   solenoidOpen();
   Serial.println("session Alarm 0");
 }
 
 void sessionAlarm1() {
   //call a one time timer according to the value duration[1] with solenoidClose to be executed when this timer is triggered
-  id[28] = Alarm.timerOnce(duration[1]*60, solenoidClose);
+  waterDischarge(volume[1],duration[1]);
+  logData[logDataCursor].eventCode = 0x11;
+  logData[logDataCursor].eventTime = now();
+  logData[logDataCursor].data[6] = (unsigned char)(duration[1]/256);
+  logData[logDataCursor].data[7] = (unsigned char)(duration[1]%256);
+  logData[logDataCursor].data[8] = (unsigned char)(volume[1]/256);
+  logData[logDataCursor].data[9] = (unsigned char)(volume[1]%256);
+  logDataCursor++;
   solenoidOpen();
   Serial.println("session Alarm 1");
 }
 
 void sessionAlarm2() {
   //call a one time timer according to the value duration[1] with solenoidClose to be executed when this timer is triggered
-  id[28] = Alarm.timerOnce(duration[2]*60, solenoidClose);
+  waterDischarge(volume[2],duration[2]);
+  logData[logDataCursor].eventCode = 0x11;
+  logData[logDataCursor].eventTime = now();
+  logData[logDataCursor].data[6] = (unsigned char)(duration[2]/256);
+  logData[logDataCursor].data[7] = (unsigned char)(duration[2]%256);
+  logData[logDataCursor].data[8] = (unsigned char)(volume[2]/256);
+  logData[logDataCursor].data[9] = (unsigned char)(volume[2]%256);
+  logDataCursor++;
   solenoidOpen();
   Serial.println("session Alarm 2");
 }
 
 void sessionAlarm3() {
   //call a one time timer according to the value duration[1] with solenoidClose to be executed when this timer is triggered
-  id[28] = Alarm.timerOnce(duration[3]*60, solenoidClose);
+  waterDischarge(volume[3],duration[3]);
+  logData[logDataCursor].eventCode = 0x11;
+  logData[logDataCursor].eventTime = now();
+  logData[logDataCursor].data[6] = (unsigned char)(duration[3]/256);
+  logData[logDataCursor].data[7] = (unsigned char)(duration[3]%256);
+  logData[logDataCursor].data[8] = (unsigned char)(volume[3]/256);
+  logData[logDataCursor].data[9] = (unsigned char)(volume[3]%256);
+  logDataCursor++;
   solenoidOpen();
   Serial.println("session Alarm 3");
 }
 
 void sessionAlarm4() {
   //call a one time timer according to the value duration[1] with solenoidClose to be executed when this timer is triggered
-  id[28] = Alarm.timerOnce(duration[4]*60, solenoidClose);
+  waterDischarge(volume[4],duration[4]);
+  logData[logDataCursor].eventCode = 0x11;
+  logData[logDataCursor].eventTime = now();
+  logData[logDataCursor].data[6] = (unsigned char)(duration[4]/256);
+  logData[logDataCursor].data[7] = (unsigned char)(duration[4]%256);
+  logData[logDataCursor].data[8] = (unsigned char)(volume[4]/256);
+  logData[logDataCursor].data[9] = (unsigned char)(volume[4]%256);
+  logDataCursor++;
   solenoidOpen();
   Serial.println("session Alarm 4");
 }
 
 void sessionAlarm5() {
   //call a one time timer according to the value duration[1] with solenoidClose to be executed when this timer is triggered
-  id[28] = Alarm.timerOnce(duration[5]*60, solenoidClose);
+  waterDischarge(volume[5],duration[5]);
+  logData[logDataCursor].eventCode = 0x11;
+  logData[logDataCursor].eventTime = now();
+  logData[logDataCursor].data[6] = (unsigned char)(duration[5]/256);
+  logData[logDataCursor].data[7] = (unsigned char)(duration[5]%256);
+  logData[logDataCursor].data[8] = (unsigned char)(volume[5]/256);
+  logData[logDataCursor].data[9] = (unsigned char)(volume[5]%256);
+  logDataCursor++;
   solenoidOpen();
   Serial.println("session Alarm 5");
 }
 
 void sessionAlarm6() {
   //call a one time timer according to the value duration[1] with solenoidClose to be executed when this timer is triggered
-  id[28] = Alarm.timerOnce(duration[6]*60, solenoidClose);
+  waterDischarge(volume[6],duration[6]);
+  logData[logDataCursor].eventCode = 0x11;
+  logData[logDataCursor].eventTime = now();
+  logData[logDataCursor].data[6] = (unsigned char)(duration[6]/256);
+  logData[logDataCursor].data[7] = (unsigned char)(duration[6]%256);
+  logData[logDataCursor].data[8] = (unsigned char)(volume[6]/256);
+  logData[logDataCursor].data[9] = (unsigned char)(volume[6]%256);
+  logDataCursor++;
   solenoidOpen();
   Serial.println("session Alarm 6");
 }
 
 void sessionAlarm7() {
   //call a one time timer according to the value duration[1] with solenoidClose to be executed when this timer is triggered
-  id[28] = Alarm.timerOnce(duration[7]*60, solenoidClose);
+  waterDischarge(volume[7],duration[7]);
+  logData[logDataCursor].eventCode = 0x11;
+  logData[logDataCursor].eventTime = now();
+  logData[logDataCursor].data[6] = (unsigned char)(duration[7]/256);
+  logData[logDataCursor].data[7] = (unsigned char)(duration[7]%256);
+  logData[logDataCursor].data[8] = (unsigned char)(volume[7]/256);
+  logData[logDataCursor].data[9] = (unsigned char)(volume[7]%256);
+  logDataCursor++;
   solenoidOpen();
   Serial.println("session Alarm 7");
 }
 
 void sessionAlarm8() {
   //call a one time timer according to the value duration[1] with solenoidClose to be executed when this timer is triggered
-  id[28] = Alarm.timerOnce(duration[8]*60, solenoidClose);
+  waterDischarge(volume[8],duration[8]);
+  logData[logDataCursor].eventCode = 0x11;
+  logData[logDataCursor].eventTime = now();
+  logData[logDataCursor].data[6] = (unsigned char)(duration[8]/256);
+  logData[logDataCursor].data[7] = (unsigned char)(duration[8]%256);
+  logData[logDataCursor].data[8] = (unsigned char)(volume[8]/256);
+  logData[logDataCursor].data[9] = (unsigned char)(volume[8]%256);
+  logDataCursor++;
   solenoidOpen();
   Serial.println("session Alarm 8");
 }
@@ -341,138 +445,268 @@ void sessionAlarm8() {
 void sessionAlarm9() {
   //call a one time timer according to the value duration[1] with solenoidClose to be executed when this timer is triggered
   Serial.println("session Alarm 9");
-  id[28] = Alarm.timerOnce(duration[9]*60, solenoidClose);
+  waterDischarge(volume[9],duration[9]);
+  logData[logDataCursor].eventCode = 0x11;
+  logData[logDataCursor].eventTime = now();
+  logData[logDataCursor].data[6] = (unsigned char)(duration[9]/256);
+  logData[logDataCursor].data[7] = (unsigned char)(duration[9]%256);
+  logData[logDataCursor].data[8] = (unsigned char)(volume[9]/256);
+  logData[logDataCursor].data[9] = (unsigned char)(volume[9]%256);
+  logDataCursor++;
   solenoidOpen();
 }
 
 void sessionAlarm10() {
   //call a one time timer according to the value duration[1] with solenoidClose to be executed when this timer is triggered
   Serial.println("session Alarm 10");
-  id[28] = Alarm.timerOnce(duration[10]*60, solenoidClose);
+  waterDischarge(volume[10],duration[10]);
+  logData[logDataCursor].eventCode = 0x11;
+  logData[logDataCursor].eventTime = now();
+  logData[logDataCursor].data[6] = (unsigned char)(duration[10]/256);
+  logData[logDataCursor].data[7] = (unsigned char)(duration[10]%256);
+  logData[logDataCursor].data[8] = (unsigned char)(volume[10]/256);
+  logData[logDataCursor].data[9] = (unsigned char)(volume[10]%256);
+  logDataCursor++;
   solenoidOpen();
 }
 
 void sessionAlarm11() {
   //call a one time timer according to the value duration[1] with solenoidClose to be executed when this timer is triggered
   Serial.println("session Alarm 11");
-  id[28] = Alarm.timerOnce(duration[11]*60, solenoidClose);
+  waterDischarge(volume[11],duration[11]);
+  logData[logDataCursor].eventCode = 0x11;
+  logData[logDataCursor].eventTime = now();
+  logData[logDataCursor].data[6] = (unsigned char)(duration[11]/256);
+  logData[logDataCursor].data[7] = (unsigned char)(duration[11]%256);
+  logData[logDataCursor].data[8] = (unsigned char)(volume[11]/256);
+  logData[logDataCursor].data[9] = (unsigned char)(volume[11]%256);
+  logDataCursor++;
   solenoidOpen();
 }
 
 void sessionAlarm12() {
   //call a one time timer according to the value duration[1] with solenoidClose to be executed when this timer is triggered
   Serial.println("session Alarm 12");
-  id[28] = Alarm.timerOnce(duration[12]*60, solenoidClose);
+  waterDischarge(volume[12],duration[12]);
+  logData[logDataCursor].eventCode = 0x11;
+  logData[logDataCursor].eventTime = now();
+  logData[logDataCursor].data[6] = (unsigned char)(duration[12]/256);
+  logData[logDataCursor].data[7] = (unsigned char)(duration[12]%256);
+  logData[logDataCursor].data[8] = (unsigned char)(volume[12]/256);
+  logData[logDataCursor].data[9] = (unsigned char)(volume[12]%256);
+  logDataCursor++;
   solenoidOpen();
 }
 
 void sessionAlarm13() {
   //call a one time timer according to the value duration[1] with solenoidClose to be executed when this timer is triggered
   Serial.println("session Alarm 13");
-  id[28] = Alarm.timerOnce(duration[13]*60, solenoidClose);
+  waterDischarge(volume[13],duration[13]);
+  logData[logDataCursor].eventCode = 0x11;
+  logData[logDataCursor].eventTime = now();
+  logData[logDataCursor].data[6] = (unsigned char)(duration[13]/256);
+  logData[logDataCursor].data[7] = (unsigned char)(duration[13]%256);
+  logData[logDataCursor].data[8] = (unsigned char)(volume[13]/256);
+  logData[logDataCursor].data[9] = (unsigned char)(volume[13]%256);
+  logDataCursor++;
   solenoidOpen();
 }
 
 void sessionAlarm14() {
   //call a one time timer according to the value duration[1] with solenoidClose to be executed when this timer is triggered
   Serial.println("session Alarm 14");
-  id[28] = Alarm.timerOnce(duration[14]*60, solenoidClose);
+  waterDischarge(volume[14],duration[14]);
+  logData[logDataCursor].eventCode = 0x11;
+  logData[logDataCursor].eventTime = now();
+  logData[logDataCursor].data[6] = (unsigned char)(duration[14]/256);
+  logData[logDataCursor].data[7] = (unsigned char)(duration[14]%256);
+  logData[logDataCursor].data[8] = (unsigned char)(volume[14]/256);
+  logData[logDataCursor].data[9] = (unsigned char)(volume[14]%256);
+  logDataCursor++;
   solenoidOpen();
 }
 
 void sessionAlarm15() {
   //call a one time timer according to the value duration[1] with solenoidClose to be executed when this timer is triggered
   Serial.println("session Alarm 15");
-  id[28] = Alarm.timerOnce(duration[15]*60, solenoidClose);
+  waterDischarge(volume[15],duration[15]);
+  logData[logDataCursor].eventCode = 0x11;
+  logData[logDataCursor].eventTime = now();
+  logData[logDataCursor].data[6] = (unsigned char)(duration[15]/256);
+  logData[logDataCursor].data[7] = (unsigned char)(duration[15]%256);
+  logData[logDataCursor].data[8] = (unsigned char)(volume[15]/256);
+  logData[logDataCursor].data[9] = (unsigned char)(volume[15]%256);
+  logDataCursor++;
   solenoidOpen();
 }
 
 void sessionAlarm16() {
   //call a one time timer according to the value duration[1] with solenoidClose to be executed when this timer is triggered
   Serial.println("session Alarm 16");
-  id[28] = Alarm.timerOnce(duration[16]*60, solenoidClose);
+  waterDischarge(volume[16],duration[16]);
+  logData[logDataCursor].eventCode = 0x11;
+  logData[logDataCursor].eventTime = now();
+  logData[logDataCursor].data[6] = (unsigned char)(duration[16]/256);
+  logData[logDataCursor].data[7] = (unsigned char)(duration[16]%256);
+  logData[logDataCursor].data[8] = (unsigned char)(volume[16]/256);
+  logData[logDataCursor].data[9] = (unsigned char)(volume[16]%256);
+  logDataCursor++;
   solenoidOpen();
 }
 
 void sessionAlarm17() {
   //call a one time timer according to the value duration[1] with solenoidClose to be executed when this timer is triggered
   Serial.println("session Alarm 17");
-  id[28] = Alarm.timerOnce(duration[17]*60, solenoidClose);
+  waterDischarge(volume[17],duration[17]);
+  logData[logDataCursor].eventCode = 0x11;
+  logData[logDataCursor].eventTime = now();
+  logData[logDataCursor].data[6] = (unsigned char)(duration[17]/256);
+  logData[logDataCursor].data[7] = (unsigned char)(duration[17]%256);
+  logData[logDataCursor].data[8] = (unsigned char)(volume[17]/256);
+  logData[logDataCursor].data[9] = (unsigned char)(volume[17]%256);
+  logDataCursor++;
   solenoidOpen();
 }
 
 void sessionAlarm18() {
   //call a one time timer according to the value duration[1] with solenoidClose to be executed when this timer is triggered
   Serial.println("session Alarm 18");
-  id[28] = Alarm.timerOnce(duration[18]*60, solenoidClose);
+  waterDischarge(volume[18],duration[18]);
+  logData[logDataCursor].eventCode = 0x11;
+  logData[logDataCursor].eventTime = now();
+  logData[logDataCursor].data[6] = (unsigned char)(duration[18]/256);
+  logData[logDataCursor].data[7] = (unsigned char)(duration[18]%256);
+  logData[logDataCursor].data[8] = (unsigned char)(volume[18]/256);
+  logData[logDataCursor].data[9] = (unsigned char)(volume[18]%256);
+  logDataCursor++;
   solenoidOpen();
 }
 
 void sessionAlarm19() {
   //call a one time timer according to the value duration[1] with solenoidClose to be executed when this timer is triggered
   Serial.println("session Alarm 19");
-  id[28] = Alarm.timerOnce(duration[19]*60, solenoidClose);
+  waterDischarge(volume[19],duration[19]);
+  logData[logDataCursor].eventCode = 0x11;
+  logData[logDataCursor].eventTime = now();
+  logData[logDataCursor].data[6] = (unsigned char)(duration[19]/256);
+  logData[logDataCursor].data[7] = (unsigned char)(duration[19]%256);
+  logData[logDataCursor].data[8] = (unsigned char)(volume[19]/256);
+  logData[logDataCursor].data[9] = (unsigned char)(volume[19]%256);
+  logDataCursor++;
   solenoidOpen();
 }
 
 void sessionAlarm20() {
   //call a one time timer according to the value duration[1] with solenoidClose to be executed when this timer is triggered
   Serial.println("session Alarm 20");
-  id[28] = Alarm.timerOnce(duration[20]*60, solenoidClose);
+  waterDischarge(volume[20],duration[20]);
+  logData[logDataCursor].eventCode = 0x11;
+  logData[logDataCursor].eventTime = now();
+  logData[logDataCursor].data[6] = (unsigned char)(duration[20]/256);
+  logData[logDataCursor].data[7] = (unsigned char)(duration[20]%256);
+  logData[logDataCursor].data[8] = (unsigned char)(volume[20]/256);
+  logData[logDataCursor].data[9] = (unsigned char)(volume[20]%256);
+  logDataCursor++;
   solenoidOpen();
 }
 
 void sessionAlarm21() {
   //call a one time timer according to the value duration[1] with solenoidClose to be executed when this timer is triggered
   Serial.println("session Alarm 21");
-  id[28] = Alarm.timerOnce(duration[21]*60, solenoidClose);
+  waterDischarge(volume[21],duration[21]);
+  logData[logDataCursor].eventCode = 0x11;
+  logData[logDataCursor].eventTime = now();
+  logData[logDataCursor].data[6] = (unsigned char)(duration[21]/256);
+  logData[logDataCursor].data[7] = (unsigned char)(duration[21]%256);
+  logData[logDataCursor].data[8] = (unsigned char)(volume[21]/256);
+  logData[logDataCursor].data[9] = (unsigned char)(volume[21]%256);
+  logDataCursor++;
   solenoidOpen();
 }
 
 void sessionAlarm22() {
   //call a one time timer according to the value duration[1] with solenoidClose to be executed when this timer is triggered
   Serial.println("session Alarm 22");
-  id[28] = Alarm.timerOnce(duration[22]*60, solenoidClose);
+  waterDischarge(volume[22],duration[22]);
+  logData[logDataCursor].eventCode = 0x11;
+  logData[logDataCursor].eventTime = now();
+  logData[logDataCursor].data[6] = (unsigned char)(duration[22]/256);
+  logData[logDataCursor].data[7] = (unsigned char)(duration[22]%256);
+  logData[logDataCursor].data[8] = (unsigned char)(volume[22]/256);
+  logData[logDataCursor].data[9] = (unsigned char)(volume[22]%256);
+  logDataCursor++;
   solenoidOpen();
 }
 
 void sessionAlarm23() {
   //call a one time timer according to the value duration[1] with solenoidClose to be executed when this timer is triggered
   Serial.println("session Alarm 23");
-  id[28] = Alarm.timerOnce(duration[23]*60, solenoidClose);
+  waterDischarge(volume[23],duration[23]);
+  logData[logDataCursor].eventCode = 0x11;
+  logData[logDataCursor].eventTime = now();
+  logData[logDataCursor].data[6] = (unsigned char)(duration[23]/256);
+  logData[logDataCursor].data[7] = (unsigned char)(duration[23]%256);
+  logData[logDataCursor].data[8] = (unsigned char)(volume[23]/256);
+  logData[logDataCursor].data[9] = (unsigned char)(volume[23]%256);
+  logDataCursor++;
   solenoidOpen();
 }
 
 void sessionAlarm24() {
   //call a one time timer according to the value duration[1] with solenoidClose to be executed when this timer is triggered
   Serial.println("session Alarm 24");
-  id[28] = Alarm.timerOnce(duration[24]*60, solenoidClose);
+  waterDischarge(volume[24],duration[24]);
+  logData[logDataCursor].eventCode = 0x11;
+  logData[logDataCursor].eventTime = now();
+  logData[logDataCursor].data[6] = (unsigned char)(duration[24]/256);
+  logData[logDataCursor].data[7] = (unsigned char)(duration[24]%256);
+  logData[logDataCursor].data[8] = (unsigned char)(volume[24]/256);
+  logData[logDataCursor].data[9] = (unsigned char)(volume[24]%256);
+  logDataCursor++;
   solenoidOpen();
 }
 
 void sessionAlarm25() {
   //call a one time timer according to the value duration[1] with solenoidClose to be executed when this timer is triggered
   Serial.println("session Alarm 25");
-  id[28] = Alarm.timerOnce(duration[25]*60, solenoidClose);
+  waterDischarge(volume[25],duration[25]);
+  logData[logDataCursor].eventCode = 0x11;
+  logData[logDataCursor].eventTime = now();
+  logData[logDataCursor].data[6] = (unsigned char)(duration[25]/256);
+  logData[logDataCursor].data[7] = (unsigned char)(duration[25]%256);
+  logData[logDataCursor].data[8] = (unsigned char)(volume[25]/256);
+  logData[logDataCursor].data[9] = (unsigned char)(volume[25]%256);
+  logDataCursor++;
   solenoidOpen();
 }
 
 void sessionAlarm26() {
   //call a one time timer according to the value duration[1] with solenoidClose to be executed when this timer is triggered
   Serial.println("session Alarm 26");
-  id[28] = Alarm.timerOnce(duration[26]*60, solenoidClose);
+  waterDischarge(volume[26],duration[26]);
+  logData[logDataCursor].eventCode = 0x11;
+  logData[logDataCursor].eventTime = now();
+  logData[logDataCursor].data[6] = (unsigned char)(duration[26]/256);
+  logData[logDataCursor].data[7] = (unsigned char)(duration[26]%256);
+  logData[logDataCursor].data[8] = (unsigned char)(volume[26]/256);
+  logData[logDataCursor].data[9] = (unsigned char)(volume[26]%256);
+  logDataCursor++;
   solenoidOpen();
 }
 
 void sessionAlarm27() {
   //call a one time timer according to the value duration[1] with solenoidClose to be executed when this timer is triggered
   Serial.println("session Alarm 27");
-  id[28] = Alarm.timerOnce(duration[27]*60, solenoidClose);
+  waterDischarge(volume[27],duration[27]);
+  logData[logDataCursor].eventCode = 0x11;
+  logData[logDataCursor].eventTime = now();
+  logData[logDataCursor].data[6] = (unsigned char)(duration[27]/256);
+  logData[logDataCursor].data[7] = (unsigned char)(duration[27]%256);
+  logData[logDataCursor].data[8] = (unsigned char)(volume[27]/256);
+  logData[logDataCursor].data[9] = (unsigned char)(volume[27]%256);
+  logDataCursor++;
   solenoidOpen();
 }
-
-
-
 
 
 void loop() {
@@ -481,6 +715,19 @@ void loop() {
   time_t t;
 
   Alarm.delay(0);
+  if(flowCounter>=countStop && countStart==1)
+   {
+     logData[logDataCursor].eventCode = 0x12;
+     logData[logDataCursor].eventTime = now();
+     logData[logDataCursor].data[8] = (unsigned char)(flowCounter/256);
+     logData[logDataCursor].data[9] = (unsigned char)(flowCounter % 256);
+     logDataCursor++;
+     solenoidClose();
+     Serial.print("flowCounter = ");
+     Serial.println(flowCounter, DEC);
+     countStart=0;
+     flowCounter=0;
+   }
 
   // if a central is connected to peripheral:
   if (central) {
@@ -488,9 +735,30 @@ void loop() {
     Serial.println(central.address());
 
     //Recording log event sample.
-    logData[logDataCursor].eventCode = 0x11;
-    logData[logDataCursor].eventTime = now() - 19800;
-    logData[logDataCursor].data = {"mac-id"};
+    logData[logDataCursor].eventCode = 0x01;
+    logData[logDataCursor].eventTime = now();
+    //centralAddress.getBytes(logData[logDataCursor].data, 12);
+    //String centralAddress = String(central.address());
+    //(central.address()).toCharArray(logData[logDataCursor].data, 10);
+    //strcpy(logData[logDataCursor].data, (central.address()));
+    uint16_t i,j=0;
+    for(i=0;central.address()[i]!=NULL;i++) {
+      if(((central.address())[i]>='A'&&(central.address())[i]<='Z')||((central.address())[i]>='0'&&(central.address())[i]<='9'))
+         logData[logDataCursor].data[j++] = (unsigned char)(central.address())[i];
+    }
+
+
+    /*logData[logDataCursor].data[0] = 'd';
+    logData[logDataCursor].data[1] = 'e';
+    logData[logDataCursor].data[2] = 'v';
+    logData[logDataCursor].data[3] = 'i';
+    logData[logDataCursor].data[4] = 'c';
+    logData[logDataCursor].data[5] = 'e';
+    logData[logDataCursor].data[6] = 0;
+    logData[logDataCursor].data[7] = 0;
+    logData[logDataCursor].data[8] = 0;
+    logData[logDataCursor].data[9] = 0;*/
+    logDataCursor++;
     //
 
     // while the central is still connected to peripheral:
@@ -498,8 +766,19 @@ void loop() {
         Alarm.delay(0);
         //Serial.print("Volume : ");
         //Serial.println(volume);
-
-
+        if(flowCounter>=countStop && countStart==1)
+         {
+           logData[logDataCursor].eventCode = 0x12;
+           logData[logDataCursor].eventTime = now();
+           logData[logDataCursor].data[8] = (unsigned char)(flowCounter/256);
+           logData[logDataCursor].data[9] = (unsigned char)(flowCounter % 256);
+           logDataCursor++;
+           solenoidClose();
+           Serial.print("flowCounter = ");
+           Serial.println(flowCounter, DEC);
+           countStart=0;
+           flowCounter=0;
+         }
 
         ////////////////////
         //Time Synchronization Service
@@ -564,9 +843,12 @@ void loop() {
            AttributeValue[copyingIndex] = Pots.value()[copyingIndex];
          }
          AttributeValue[copyingIndex] = NULL;
-
          Serial.println("Pots.written()");
          Serial.print(AttributeValue[0], DEC);
+         logData[logDataCursor].eventCode = 0x71;
+         logData[logDataCursor].eventTime = now();
+        logData[logDataCursor].data[7] = AttributeValue[0];
+         logDataCursor++;
          Serial.println(".");
          digitalWrite(13, HIGH);
          delay(50);              // wait for a second
@@ -586,7 +868,7 @@ void loop() {
            AttributeValue[copyingIndex] = LogEvent.value()[copyingIndex];
          }
          AttributeValue[copyingIndex] = NULL;
-
+        // const unsigned char logEventData[15] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
          Serial.print("LogService_EventCharacteristic written. Characteristic will be set to logData of ");
          Serial.print((((unsigned char) AttributeValue[0]) * 256) + (unsigned char) AttributeValue[1], DEC);
          Serial.println(".");
@@ -597,9 +879,8 @@ void loop() {
          time[1] = (unsigned char)(eventTime >> 16);
          time[2] = (unsigned char)(eventTime >> 8);
          time[3] = (unsigned char)(eventTime);
-         const unsigned char logEvent[15] = {logData[serialNumber].eventCode, time[0],time[1],time[2],time[3],'5','6','7','8','9','A','B','C','D','E'};
-
-         LogEvent.setValue(logEvent, 15);
+         const unsigned char logEventData[15] = {logData[serialNumber].eventCode, time[0],time[1],time[2],time[3],logData[serialNumber].data[0],logData[serialNumber].data[1],logData[serialNumber].data[2],logData[serialNumber].data[3],logData[serialNumber].data[4],logData[serialNumber].data[5], logData[serialNumber].data[6], logData[serialNumber].data[7], logData[serialNumber].data[8], logData[serialNumber].data[9]};
+         LogEvent.setValue(logEventData, 15);
 
          Serial.println(eventTime, DEC);
          Serial.print(time[0], DEC);
@@ -609,9 +890,9 @@ void loop() {
          Serial.print(time[2], DEC);
          Serial.print(" ");
          Serial.println(time[3], DEC);
-         const unsigned char logEvent[15] = {time[0],time[1],time[2],time[3],'5','6','7','8','9','A','B','C','D','E','F'};
+         //const unsigned char logEvent[15] = {time[0],time[1],time[2],time[3],'5','6','7','8','9','A','B','C','D','E','F'};
 
-         LogEvent.setValue(logEvent, 15);
+         //LogEvent.setValue(logEvent, 15);
          digitalWrite(13, HIGH);
          delay(50);              // wait for a second
          digitalWrite(13, LOW);
@@ -636,23 +917,43 @@ void loop() {
          {
           case 1:
             Serial.println("Flush open written");
+            flowCounter = 0;
+            logData[logDataCursor].eventCode = 0x51;
+            logData[logDataCursor].eventTime = now();
+            logData[logDataCursor].data[8] = (unsigned char)(flowCounter/256);
+            logData[logDataCursor].data[9] = (unsigned char)(flowCounter % 256);
+            logDataCursor++;
             solenoidOpen();
           break;
 
           case 2:
             Serial.println("Start written");
+            logData[logDataCursor].eventCode = 0x61;
+            logData[logDataCursor].eventTime = now();
+            logDataCursor++;
           break;
 
           case 3:
             Serial.println("Stop written");
+            logData[logDataCursor].eventCode = 0x62;
+            logData[logDataCursor].eventTime = now();
+            logDataCursor++;
           break;
 
           case 4:
             Serial.println("Pause written");
+            logData[logDataCursor].eventCode = 0x63;
+            logData[logDataCursor].eventTime = now();
+            logDataCursor++;
           break;
 
           case 5:
              Serial.println("Flush close written");
+             logData[logDataCursor].eventCode = 0x52;
+             logData[logDataCursor].eventTime = now();
+             logData[logDataCursor].data[8] = (unsigned char)(flowCounter/256);
+             logData[logDataCursor].data[9] = (unsigned char)(flowCounter % 256);
+             logDataCursor++;
              solenoidClose();
              break;
 
@@ -703,6 +1004,14 @@ void loop() {
          Serial.print(",");
          Serial.print(AttributeValue[8], DEC);
          Serial.println(".");*/
+         logData[logDataCursor].eventCode = 0x14;
+         logData[logDataCursor].eventTime = now();
+         uint16_t copyValue=0;
+         for(copyValue=0; copyValue<9; copyValue++)
+         {
+           logData[logDataCursor].data[copyValue+1] = AttributeValue[copyValue];
+         }
+         logDataCursor++;
 
          if(AttributeValue[0] == 0)
          {
@@ -1217,6 +1526,14 @@ void loop() {
     }
     // when the central disconnects, print it out:
     Serial.print("Disconnected from central: ");
+    logData[logDataCursor].eventCode = 0x02;
+    logData[logDataCursor].eventTime = now();
+    uint16_t k,l=0;
+    for(k=0;central.address()[k]!=NULL;k++) {
+      if(((central.address())[k]>='A'&&(central.address())[k]<='Z')||((central.address())[k]>='0'&&(central.address())[k]<='9'))
+         logData[logDataCursor].data[l++] = (unsigned char)(central.address())[k];
+    }
+    logDataCursor++;
     Serial.println(central.address());
   }
 }

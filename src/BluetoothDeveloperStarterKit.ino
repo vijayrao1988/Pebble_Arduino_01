@@ -762,9 +762,9 @@ void loop() {
       {
         placeValue = 1; //if the number is 1 more than a number divisible by 3, it is to be added directly without multiplication
       }
-      if(((central.address())[i]>='A'&&(central.address())[i]<='F')
+      if(((central.address())[i]>='A'&&(central.address())[i]<='F'))
         logData[logDataCursor].data[i/3] = logData[logDataCursor].data[i/3] + (placeValue * ((unsigned char)(central.address())[i] - 55)); //A = 65, F = 70. These represent 10 to 15 in hexadecimal. Therefore, subtract 55.
-      if((central.address())[i]>='0'&&(central.address())[i]<='9'))
+      if(((central.address())[i]>='0'&&(central.address())[i]<='9'))
         logData[logDataCursor].data[i/3] = logData[logDataCursor].data[i/3] + (placeValue * ((unsigned char)(central.address())[i] - 48)); //0 = 48, 9 = 57. These represent 0 to 9 in hexadecimal. Therefore, subtract 48.
     }
 

@@ -741,10 +741,31 @@ void loop() {
     //String centralAddress = String(central.address());
     //(central.address()).toCharArray(logData[logDataCursor].data, 10);
     //strcpy(logData[logDataCursor].data, (central.address()));
+
+//TODO:@Vijay: The following loop must convert the address string to numbers such that the 12 ascii characters representing the address must fit into 6 unsigned characters.
+
+    //The following 2 loops should initialize 6 unsigned char bytes to zero and then save the address in the 5 bytes
     uint16_t i,j=0;
+    //this loop initializes the data to 0 to avoid stale data
     for(i=0;central.address()[i]!=NULL;i++) {
-      if(((central.address())[i]>='A'&&(central.address())[i]<='Z')||((central.address())[i]>='0'&&(central.address())[i]<='9'))
-         logData[logDataCursor].data[j++] = (unsigned char)(central.address())[i];
+      logData[logDataCursor].data[i/3] = 0;
+    }
+
+    //this loop reads the address and converts the ascii to intergers
+    for(i=0;central.address()[i]!=NULL;i++) {
+      int placeValue = 1;
+      if((i % 3) == 0)
+      {
+        placeValue = 16; //if the number is divisible by 3, it is to by multiplied by 16.
+      }
+      else if (((i - 1) % 3) == 0)
+      {
+        placeValue = 1; //if the number is 1 more than a number divisible by 3, it is to be added directly without multiplication
+      }
+      if(((central.address())[i]>='A'&&(central.address())[i]<='F')
+        logData[logDataCursor].data[i/3] = logData[logDataCursor].data[i/3] + (placeValue * ((unsigned char)(central.address())[i] - 55)); //A = 65, F = 70. These represent 10 to 15 in hexadecimal. Therefore, subtract 55.
+      if((central.address())[i]>='0'&&(central.address())[i]<='9'))
+        logData[logDataCursor].data[i/3] = logData[logDataCursor].data[i/3] + (placeValue * ((unsigned char)(central.address())[i] - 48)); //0 = 48, 9 = 57. These represent 0 to 9 in hexadecimal. Therefore, subtract 48.
     }
 
 

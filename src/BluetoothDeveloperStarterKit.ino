@@ -106,8 +106,8 @@ BLECharacteristic LogEvent("6E521234B56F4B058465A1CEE41BB141", LogEvent_props, 1
 struct logEvent {
   unsigned char eventCode;
   unsigned long eventTime;
-  unsigned char data[12];
-} logData[100];
+  unsigned char data[10];
+} logData[300];
 
 static uint16_t logDataCursor = 0;
 
@@ -161,22 +161,10 @@ void setup() {
   digitalWrite(12, LOW);
   digitalWrite(13, LOW);
 
-  //solenoidOpen();
-  //delay(2000);
-  //solenoidClose();
-  //delay(2000);
-
-  //solenoidOpen();
-  //delay(2000);
-  //solenoidClose();
-  //delay(2000);
-
-  //solenoidClose();
 
   char batteryLevel = 100;
   const char * batteryLevelPtr = &batteryLevel;
-//  const unsigned char logEventData[15] = {'1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
-  //const unsigned char * logEventPtr = &logEvent;
+
   Serial.begin(115200);
   //while (! Serial); // Wait until Serial is ready
   Serial.println("setup()");
@@ -767,18 +755,12 @@ void loop() {
       if(((central.address())[i]>='0'&&(central.address())[i]<='9'))
         logData[logDataCursor].data[i/3] = logData[logDataCursor].data[i/3] + (placeValue * ((unsigned char)(central.address())[i] - 48)); //0 = 48, 9 = 57. These represent 0 to 9 in hexadecimal. Therefore, subtract 48.
     }
-
-
-    /*logData[logDataCursor].data[0] = 'd';
-    logData[logDataCursor].data[1] = 'e';
-    logData[logDataCursor].data[2] = 'v';
-    logData[logDataCursor].data[3] = 'i';
-    logData[logDataCursor].data[4] = 'c';
-    logData[logDataCursor].data[5] = 'e';
-    logData[logDataCursor].data[6] = 0;
-    logData[logDataCursor].data[7] = 0;
-    logData[logDataCursor].data[8] = 0;
-    logData[logDataCursor].data[9] = 0;*/
+     Serial.print(logData[logDataCursor].data[0], HEX);
+     Serial.print(logData[logDataCursor].data[1], HEX);
+     Serial.print(logData[logDataCursor].data[2], HEX);
+     Serial.print(logData[logDataCursor].data[3], HEX);
+     Serial.print(logData[logDataCursor].data[4], HEX);
+     Serial.println(logData[logDataCursor].data[5], HEX);
     logDataCursor++;
     //
 
@@ -941,8 +923,6 @@ void loop() {
             flowCounter = 0;
             logData[logDataCursor].eventCode = 0x51;
             logData[logDataCursor].eventTime = now();
-            logData[logDataCursor].data[8] = (unsigned char)(flowCounter/256);
-            logData[logDataCursor].data[9] = (unsigned char)(flowCounter % 256);
             logDataCursor++;
             solenoidOpen();
           break;
@@ -1025,18 +1005,14 @@ void loop() {
          Serial.print(",");
          Serial.print(AttributeValue[8], DEC);
          Serial.println(".");*/
-         logData[logDataCursor].eventCode = 0x14;
-         logData[logDataCursor].eventTime = now();
-         uint16_t copyValue=0;
-         for(copyValue=0; copyValue<9; copyValue++)
-         {
-           logData[logDataCursor].data[copyValue+1] = AttributeValue[copyValue];
-         }
-         logDataCursor++;
 
          if(AttributeValue[0] == 0)
          {
-          //reset all alarms for time point index 0
+          //reset all alarms for time point index
+          logData[logDataCursor].eventCode = 0x14;
+          logData[logDataCursor].eventTime = now();
+          logDataCursor++;
+
           int i;
           for(i = 0; i < 32; i++)
           {
@@ -1047,6 +1023,14 @@ void loop() {
          }
          else
          {
+           logData[logDataCursor].eventCode = 0x15;
+           logData[logDataCursor].eventTime = now();
+           uint16_t copyValue=0;
+           for(copyValue=0; copyValue<9; copyValue++)
+           {
+             logData[logDataCursor].data[copyValue+1] = (unsigned char)AttributeValue[copyValue];
+           }
+           logDataCursor++;
           //set alarm as per time point index (1 - 32)
           switch(AttributeValue[0])
           {
@@ -1549,10 +1533,26 @@ void loop() {
     Serial.print("Disconnected from central: ");
     logData[logDataCursor].eventCode = 0x02;
     logData[logDataCursor].eventTime = now();
-    uint16_t k,l=0;
-    for(k=0;central.address()[k]!=NULL;k++) {
-      if(((central.address())[k]>='A'&&(central.address())[k]<='Z')||((central.address())[k]>='0'&&(central.address())[k]<='9'))
-         logData[logDataCursor].data[l++] = (unsigned char)(central.address())[k];
+    //this loop initializes the data to 0 to avoid stale data
+    for(i=0;central.address()[i]!=NULL;i++) {
+      logData[logDataCursor].data[i/3] = 0;
+    }
+
+    //this loop reads the address and converts the ascii to intergers
+    for(i=0;central.address()[i]!=NULL;i++) {
+      int placeValue = 1;
+      if((i % 3) == 0)
+      {
+        placeValue = 16; //if the number is divisible by 3, it is to by multiplied by 16.
+      }
+      else if (((i - 1) % 3) == 0)
+      {
+        placeValue = 1; //if the number is 1 more than a number divisible by 3, it is to be added directly without multiplication
+      }
+      if(((central.address())[i]>='A'&&(central.address())[i]<='F'))
+        logData[logDataCursor].data[i/3] = logData[logDataCursor].data[i/3] + (placeValue * ((unsigned char)(central.address())[i] - 55)); //A = 65, F = 70. These represent 10 to 15 in hexadecimal. Therefore, subtract 55.
+      if(((central.address())[i]>='0'&&(central.address())[i]<='9'))
+        logData[logDataCursor].data[i/3] = logData[logDataCursor].data[i/3] + (placeValue * ((unsigned char)(central.address())[i] - 48)); //0 = 48, 9 = 57. These represent 0 to 9 in hexadecimal. Therefore, subtract 48.
     }
     logDataCursor++;
     Serial.println(central.address());

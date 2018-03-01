@@ -19,6 +19,10 @@
 #define solenoidN 7
 #define button 2
 #define flowSensor 4
+#define ledPower 3
+#define ledStop  5
+#define ledStart 6
+
 
 timeDayOfWeek_t alarmDay[7] = {dowSunday, dowMonday, dowTuesday, dowWednesday, dowThursday, dowFriday, dowSaturday};
 
@@ -118,6 +122,9 @@ void setup() {
   pinMode(10, OUTPUT);
   pinMode(8, OUTPUT);
   pinMode(7, OUTPUT);
+  pinMode(ledPower, OUTPUT);
+  pinMode(ledStop, OUTPUT);
+  pinMode(ledStart, OUTPUT);
   pinMode(button, INPUT);
   digitalWrite(button, HIGH);
   pinMode(flowSensor, INPUT);
@@ -127,7 +134,7 @@ void setup() {
   attachInterrupt(digitalPinToInterrupt(flowSensor), count, CHANGE);
   interrupts();
 
-
+  digitalWrite(ledPower, HIGH);
   digitalWrite(8, HIGH);
   digitalWrite(7, HIGH);
 
@@ -204,6 +211,8 @@ void setup() {
 
 void solenoidOpen() {
    Serial.println("Opening Solenoid.");
+   digitalWrite(ledStart, HIGH);
+   digitalWrite(ledStop, LOW);
    digitalWrite(solenoidP, LOW);
    digitalWrite(solenoidN, HIGH);
    delay(100);              // wait for a second
@@ -213,6 +222,8 @@ void solenoidOpen() {
 
 void solenoidClose() {
    Serial.println("Closing Solenoid.");
+   digitalWrite(ledStart, LOW);
+   digitalWrite(ledStop, LOW);
    digitalWrite(solenoidP, HIGH);
    digitalWrite(solenoidN, LOW);
    delay(100);              // wait for a second
@@ -240,7 +251,7 @@ void beep() {
   pinMode(2, OUTPUT);
   Serial.println("Interrupts disabled. External Button Interrupt Triggered.");
   digitalWrite(13, HIGH);
-  delay(50);              // wait for a second\
+  delay(50);              // wait for a second
   digitalWrite(13, LOW);
   Alarm.timerOnce(10, debounce);
   // begin advertising
@@ -701,7 +712,13 @@ void loop() {
   // listen for BLE peripherals to connect:
   BLECentral central = blePeripheral.central();
   time_t t;
-
+  if(!central)
+  {
+    digitalWrite(ledPower, HIGH);
+    delay(250);
+    digitalWrite(ledPower, LOW);
+    delay(250);
+  }
   Alarm.delay(0);
   if(flowCounter>=countStop && countStart==1)
    {
@@ -721,7 +738,7 @@ void loop() {
   if (central) {
     Serial.print("Connected to central: ");
     Serial.println(central.address());
-
+    digitalWrite(ledPower, HIGH);
     //Recording log event sample.
     logData[logDataCursor].eventCode = 0x01;
     logData[logDataCursor].eventTime = now();
@@ -733,7 +750,7 @@ void loop() {
 //TODO:@Vijay: The following loop must convert the address string to numbers such that the 12 ascii characters representing the address must fit into 6 unsigned characters.
 
     //The following 2 loops should initialize 6 unsigned char bytes to zero and then save the address in the 5 bytes
-    uint16_t i,j=0;
+    uint16_t i;
     //this loop initializes the data to 0 to avoid stale data
     for(i=0;central.address()[i]!=NULL;i++) {
       logData[logDataCursor].data[i/3] = 0;
@@ -929,6 +946,7 @@ void loop() {
 
           case 2:
             Serial.println("Start written");
+            digitalWrite(ledStop, LOW);
             logData[logDataCursor].eventCode = 0x61;
             logData[logDataCursor].eventTime = now();
             logDataCursor++;
@@ -939,6 +957,10 @@ void loop() {
             logData[logDataCursor].eventCode = 0x62;
             logData[logDataCursor].eventTime = now();
             logDataCursor++;
+            digitalWrite(ledStart, LOW);
+            digitalWrite(ledStop, HIGH);
+            delay(5000);
+            digitalWrite(ledStop, LOW);
           break;
 
           case 4:
@@ -946,6 +968,17 @@ void loop() {
             logData[logDataCursor].eventCode = 0x63;
             logData[logDataCursor].eventTime = now();
             logDataCursor++;
+            uint8_t m;
+            for(m=0; m<5; m++)
+            {
+              digitalWrite(ledPower, HIGH);
+              digitalWrite(ledStop, HIGH);
+              delay(500);
+              digitalWrite(ledStop, LOW);
+              digitalWrite(ledPower, LOW);
+              delay(500);
+            }
+            digitalWrite(ledPower, HIGH);
           break;
 
           case 5:

@@ -34,7 +34,8 @@ Bounce interruptButtonBouncer = Bounce();
 AlarmId id[32];
 static uint16_t volume[28];
 static uint16_t duration[28];
-static uint16_t flowCounter = 0,countStop=0, countStart=0;
+static volatile uint16_t flowCounter = 0,countStop=0, countStart=0;
+static volatile uint8_t systemPause=0;
 
 // BLE objects
 BLEPeripheral blePeripheral;
@@ -212,7 +213,6 @@ void setup() {
 void solenoidOpen() {
    Serial.println("Opening Solenoid.");
    digitalWrite(ledStart, HIGH);
-   digitalWrite(ledStop, LOW);
    digitalWrite(solenoidP, LOW);
    digitalWrite(solenoidN, HIGH);
    delay(100);              // wait for a second
@@ -223,7 +223,6 @@ void solenoidOpen() {
 void solenoidClose() {
    Serial.println("Closing Solenoid.");
    digitalWrite(ledStart, LOW);
-   digitalWrite(ledStop, LOW);
    digitalWrite(solenoidP, HIGH);
    digitalWrite(solenoidN, LOW);
    delay(100);              // wait for a second
@@ -317,6 +316,8 @@ void waterDischarge(uint16_t volume, uint16_t duration)
 
 void sessionAlarm0() {
   //call a one time timer according to the value duration[1] with solenoidClose to be executed when this timer is triggered
+  if(systemPause == 0)
+  {
   waterDischarge(volume[0],duration[0]);
   logData[logDataCursor].eventCode = 0x11;
   logData[logDataCursor].eventTime = now();
@@ -327,10 +328,13 @@ void sessionAlarm0() {
   logDataCursor++;
   solenoidOpen();
   Serial.println("session Alarm 0");
+  }
 }
 
 void sessionAlarm1() {
   //call a one time timer according to the value duration[1] with solenoidClose to be executed when this timer is triggered
+  if(systemPause == 0)
+  {
   waterDischarge(volume[1],duration[1]);
   logData[logDataCursor].eventCode = 0x11;
   logData[logDataCursor].eventTime = now();
@@ -341,10 +345,13 @@ void sessionAlarm1() {
   logDataCursor++;
   solenoidOpen();
   Serial.println("session Alarm 1");
+  }
 }
 
 void sessionAlarm2() {
   //call a one time timer according to the value duration[1] with solenoidClose to be executed when this timer is triggered
+  if(systemPause == 0)
+  {
   waterDischarge(volume[2],duration[2]);
   logData[logDataCursor].eventCode = 0x11;
   logData[logDataCursor].eventTime = now();
@@ -355,10 +362,13 @@ void sessionAlarm2() {
   logDataCursor++;
   solenoidOpen();
   Serial.println("session Alarm 2");
+  }
 }
 
 void sessionAlarm3() {
   //call a one time timer according to the value duration[1] with solenoidClose to be executed when this timer is triggered
+  if(systemPause == 0)
+ {
   waterDischarge(volume[3],duration[3]);
   logData[logDataCursor].eventCode = 0x11;
   logData[logDataCursor].eventTime = now();
@@ -369,10 +379,13 @@ void sessionAlarm3() {
   logDataCursor++;
   solenoidOpen();
   Serial.println("session Alarm 3");
+  }
 }
 
 void sessionAlarm4() {
   //call a one time timer according to the value duration[1] with solenoidClose to be executed when this timer is triggered
+  if(systemPause == 0)
+  {
   waterDischarge(volume[4],duration[4]);
   logData[logDataCursor].eventCode = 0x11;
   logData[logDataCursor].eventTime = now();
@@ -383,10 +396,13 @@ void sessionAlarm4() {
   logDataCursor++;
   solenoidOpen();
   Serial.println("session Alarm 4");
+  }
 }
 
 void sessionAlarm5() {
   //call a one time timer according to the value duration[1] with solenoidClose to be executed when this timer is triggered
+ if(systemPause == 0)
+{
   waterDischarge(volume[5],duration[5]);
   logData[logDataCursor].eventCode = 0x11;
   logData[logDataCursor].eventTime = now();
@@ -397,10 +413,13 @@ void sessionAlarm5() {
   logDataCursor++;
   solenoidOpen();
   Serial.println("session Alarm 5");
+ }
 }
 
 void sessionAlarm6() {
   //call a one time timer according to the value duration[1] with solenoidClose to be executed when this timer is triggered
+  if(systemPause == 0)
+{
   waterDischarge(volume[6],duration[6]);
   logData[logDataCursor].eventCode = 0x11;
   logData[logDataCursor].eventTime = now();
@@ -411,10 +430,13 @@ void sessionAlarm6() {
   logDataCursor++;
   solenoidOpen();
   Serial.println("session Alarm 6");
+ }
 }
 
 void sessionAlarm7() {
   //call a one time timer according to the value duration[1] with solenoidClose to be executed when this timer is triggered
+if(systemPause == 0)
+{
   waterDischarge(volume[7],duration[7]);
   logData[logDataCursor].eventCode = 0x11;
   logData[logDataCursor].eventTime = now();
@@ -425,10 +447,13 @@ void sessionAlarm7() {
   logDataCursor++;
   solenoidOpen();
   Serial.println("session Alarm 7");
+ }
 }
 
 void sessionAlarm8() {
   //call a one time timer according to the value duration[1] with solenoidClose to be executed when this timer is triggered
+if(systemPause == 0)
+{
   waterDischarge(volume[8],duration[8]);
   logData[logDataCursor].eventCode = 0x11;
   logData[logDataCursor].eventTime = now();
@@ -440,9 +465,12 @@ void sessionAlarm8() {
   solenoidOpen();
   Serial.println("session Alarm 8");
 }
+}
 
 void sessionAlarm9() {
   //call a one time timer according to the value duration[1] with solenoidClose to be executed when this timer is triggered
+if(systemPause == 0)
+{
   Serial.println("session Alarm 9");
   waterDischarge(volume[9],duration[9]);
   logData[logDataCursor].eventCode = 0x11;
@@ -453,10 +481,13 @@ void sessionAlarm9() {
   logData[logDataCursor].data[9] = (unsigned char)(volume[9]%256);
   logDataCursor++;
   solenoidOpen();
+ }
 }
 
 void sessionAlarm10() {
   //call a one time timer according to the value duration[1] with solenoidClose to be executed when this timer is triggered
+ if(systemPause == 0)
+{
   Serial.println("session Alarm 10");
   waterDischarge(volume[10],duration[10]);
   logData[logDataCursor].eventCode = 0x11;
@@ -467,10 +498,13 @@ void sessionAlarm10() {
   logData[logDataCursor].data[9] = (unsigned char)(volume[10]%256);
   logDataCursor++;
   solenoidOpen();
+ }
 }
 
 void sessionAlarm11() {
   //call a one time timer according to the value duration[1] with solenoidClose to be executed when this timer is triggered
+ if(systemPause == 0)
+{
   Serial.println("session Alarm 11");
   waterDischarge(volume[11],duration[11]);
   logData[logDataCursor].eventCode = 0x11;
@@ -481,10 +515,13 @@ void sessionAlarm11() {
   logData[logDataCursor].data[9] = (unsigned char)(volume[11]%256);
   logDataCursor++;
   solenoidOpen();
+ }
 }
 
 void sessionAlarm12() {
   //call a one time timer according to the value duration[1] with solenoidClose to be executed when this timer is triggered
+ if(systemPause == 0)
+ {
   Serial.println("session Alarm 12");
   waterDischarge(volume[12],duration[12]);
   logData[logDataCursor].eventCode = 0x11;
@@ -495,10 +532,14 @@ void sessionAlarm12() {
   logData[logDataCursor].data[9] = (unsigned char)(volume[12]%256);
   logDataCursor++;
   solenoidOpen();
+ }
 }
 
-void sessionAlarm13() {
+void sessionAlarm13()
+{
   //call a one time timer according to the value duration[1] with solenoidClose to be executed when this timer is triggered
+if(systemPause == 0)
+{
   Serial.println("session Alarm 13");
   waterDischarge(volume[13],duration[13]);
   logData[logDataCursor].eventCode = 0x11;
@@ -509,10 +550,13 @@ void sessionAlarm13() {
   logData[logDataCursor].data[9] = (unsigned char)(volume[13]%256);
   logDataCursor++;
   solenoidOpen();
+ }
 }
 
 void sessionAlarm14() {
   //call a one time timer according to the value duration[1] with solenoidClose to be executed when this timer is triggered
+if(systemPause == 0)
+{
   Serial.println("session Alarm 14");
   waterDischarge(volume[14],duration[14]);
   logData[logDataCursor].eventCode = 0x11;
@@ -523,10 +567,13 @@ void sessionAlarm14() {
   logData[logDataCursor].data[9] = (unsigned char)(volume[14]%256);
   logDataCursor++;
   solenoidOpen();
+ }
 }
 
 void sessionAlarm15() {
   //call a one time timer according to the value duration[1] with solenoidClose to be executed when this timer is triggered
+if(systemPause == 0)
+{
   Serial.println("session Alarm 15");
   waterDischarge(volume[15],duration[15]);
   logData[logDataCursor].eventCode = 0x11;
@@ -537,10 +584,13 @@ void sessionAlarm15() {
   logData[logDataCursor].data[9] = (unsigned char)(volume[15]%256);
   logDataCursor++;
   solenoidOpen();
+ }
 }
 
 void sessionAlarm16() {
   //call a one time timer according to the value duration[1] with solenoidClose to be executed when this timer is triggered
+ if(systemPause == 0)
+{
   Serial.println("session Alarm 16");
   waterDischarge(volume[16],duration[16]);
   logData[logDataCursor].eventCode = 0x11;
@@ -551,10 +601,13 @@ void sessionAlarm16() {
   logData[logDataCursor].data[9] = (unsigned char)(volume[16]%256);
   logDataCursor++;
   solenoidOpen();
+ }
 }
 
 void sessionAlarm17() {
   //call a one time timer according to the value duration[1] with solenoidClose to be executed when this timer is triggered
+ if(systemPause == 0)
+{
   Serial.println("session Alarm 17");
   waterDischarge(volume[17],duration[17]);
   logData[logDataCursor].eventCode = 0x11;
@@ -565,10 +618,13 @@ void sessionAlarm17() {
   logData[logDataCursor].data[9] = (unsigned char)(volume[17]%256);
   logDataCursor++;
   solenoidOpen();
+ }
 }
 
 void sessionAlarm18() {
   //call a one time timer according to the value duration[1] with solenoidClose to be executed when this timer is triggered
+if(systemPause == 0)
+{
   Serial.println("session Alarm 18");
   waterDischarge(volume[18],duration[18]);
   logData[logDataCursor].eventCode = 0x11;
@@ -579,10 +635,13 @@ void sessionAlarm18() {
   logData[logDataCursor].data[9] = (unsigned char)(volume[18]%256);
   logDataCursor++;
   solenoidOpen();
+ }
 }
 
 void sessionAlarm19() {
   //call a one time timer according to the value duration[1] with solenoidClose to be executed when this timer is triggered
+ if(systemPause == 0)
+{
   Serial.println("session Alarm 19");
   waterDischarge(volume[19],duration[19]);
   logData[logDataCursor].eventCode = 0x11;
@@ -593,10 +652,13 @@ void sessionAlarm19() {
   logData[logDataCursor].data[9] = (unsigned char)(volume[19]%256);
   logDataCursor++;
   solenoidOpen();
+ }
 }
 
 void sessionAlarm20() {
   //call a one time timer according to the value duration[1] with solenoidClose to be executed when this timer is triggered
+if(systemPause == 0)
+{
   Serial.println("session Alarm 20");
   waterDischarge(volume[20],duration[20]);
   logData[logDataCursor].eventCode = 0x11;
@@ -607,10 +669,13 @@ void sessionAlarm20() {
   logData[logDataCursor].data[9] = (unsigned char)(volume[20]%256);
   logDataCursor++;
   solenoidOpen();
+ }
 }
 
 void sessionAlarm21() {
   //call a one time timer according to the value duration[1] with solenoidClose to be executed when this timer is triggered
+if(systemPause == 0)
+{
   Serial.println("session Alarm 21");
   waterDischarge(volume[21],duration[21]);
   logData[logDataCursor].eventCode = 0x11;
@@ -621,10 +686,13 @@ void sessionAlarm21() {
   logData[logDataCursor].data[9] = (unsigned char)(volume[21]%256);
   logDataCursor++;
   solenoidOpen();
+ }
 }
 
 void sessionAlarm22() {
   //call a one time timer according to the value duration[1] with solenoidClose to be executed when this timer is triggered
+if(systemPause == 0)
+{
   Serial.println("session Alarm 22");
   waterDischarge(volume[22],duration[22]);
   logData[logDataCursor].eventCode = 0x11;
@@ -635,10 +703,13 @@ void sessionAlarm22() {
   logData[logDataCursor].data[9] = (unsigned char)(volume[22]%256);
   logDataCursor++;
   solenoidOpen();
+ }
 }
 
 void sessionAlarm23() {
   //call a one time timer according to the value duration[1] with solenoidClose to be executed when this timer is triggered
+ if(systemPause == 0)
+{
   Serial.println("session Alarm 23");
   waterDischarge(volume[23],duration[23]);
   logData[logDataCursor].eventCode = 0x11;
@@ -649,10 +720,13 @@ void sessionAlarm23() {
   logData[logDataCursor].data[9] = (unsigned char)(volume[23]%256);
   logDataCursor++;
   solenoidOpen();
+ }
 }
 
 void sessionAlarm24() {
   //call a one time timer according to the value duration[1] with solenoidClose to be executed when this timer is triggered
+ if(systemPause == 0)
+{
   Serial.println("session Alarm 24");
   waterDischarge(volume[24],duration[24]);
   logData[logDataCursor].eventCode = 0x11;
@@ -663,10 +737,13 @@ void sessionAlarm24() {
   logData[logDataCursor].data[9] = (unsigned char)(volume[24]%256);
   logDataCursor++;
   solenoidOpen();
+ }
 }
 
 void sessionAlarm25() {
   //call a one time timer according to the value duration[1] with solenoidClose to be executed when this timer is triggered
+ if(systemPause == 0)
+{
   Serial.println("session Alarm 25");
   waterDischarge(volume[25],duration[25]);
   logData[logDataCursor].eventCode = 0x11;
@@ -677,10 +754,13 @@ void sessionAlarm25() {
   logData[logDataCursor].data[9] = (unsigned char)(volume[25]%256);
   logDataCursor++;
   solenoidOpen();
+ }
 }
 
 void sessionAlarm26() {
   //call a one time timer according to the value duration[1] with solenoidClose to be executed when this timer is triggered
+ if(systemPause == 0)
+{
   Serial.println("session Alarm 26");
   waterDischarge(volume[26],duration[26]);
   logData[logDataCursor].eventCode = 0x11;
@@ -691,10 +771,13 @@ void sessionAlarm26() {
   logData[logDataCursor].data[9] = (unsigned char)(volume[26]%256);
   logDataCursor++;
   solenoidOpen();
+ }
 }
 
 void sessionAlarm27() {
   //call a one time timer according to the value duration[1] with solenoidClose to be executed when this timer is triggered
+ if(systemPause == 0)
+{
   Serial.println("session Alarm 27");
   waterDischarge(volume[27],duration[27]);
   logData[logDataCursor].eventCode = 0x11;
@@ -705,6 +788,7 @@ void sessionAlarm27() {
   logData[logDataCursor].data[9] = (unsigned char)(volume[27]%256);
   logDataCursor++;
   solenoidOpen();
+ }
 }
 
 
@@ -936,12 +1020,17 @@ void loop() {
          switch(AttributeValue[0])
          {
           case 1:
-            Serial.println("Flush open written");
-            flowCounter = 0;
-            logData[logDataCursor].eventCode = 0x51;
-            logData[logDataCursor].eventTime = now();
-            logDataCursor++;
-            solenoidOpen();
+            if(systemPause == 0)
+            {
+              Serial.println("Flush open written");
+              flowCounter = 0;
+              logData[logDataCursor].eventCode = 0x51;
+              logData[logDataCursor].eventTime = now();
+              logDataCursor++;
+              solenoidOpen();
+            }
+            else
+                Serial.println("Pebble is paused");
           break;
 
           case 2:
@@ -950,6 +1039,7 @@ void loop() {
             logData[logDataCursor].eventCode = 0x61;
             logData[logDataCursor].eventTime = now();
             logDataCursor++;
+            systemPause = 0;           //Pebble is unpaused
           break;
 
           case 3:
@@ -957,10 +1047,21 @@ void loop() {
             logData[logDataCursor].eventCode = 0x62;
             logData[logDataCursor].eventTime = now();
             logDataCursor++;
+            int j;
+            for(j = 0; j < 32; j++)
+            {
+              Alarm.free(id[j]);
+            }
+            Serial.println("All Time points erased");
             digitalWrite(ledStart, LOW);
+            uint8_t m;
+            for(m=0; m<5; m++)
+            {
             digitalWrite(ledStop, HIGH);
-            delay(5000);
+            delay(200);
             digitalWrite(ledStop, LOW);
+            delay(200);
+           }
           break;
 
           case 4:
@@ -968,20 +1069,24 @@ void loop() {
             logData[logDataCursor].eventCode = 0x63;
             logData[logDataCursor].eventTime = now();
             logDataCursor++;
-            uint8_t m;
-            for(m=0; m<5; m++)
-            {
+            systemPause = 1;
+            Serial.println("Pebble paused ");
+            //uint8_t m;
+            //for(m=0; m<5; m++)
+            //{
               digitalWrite(ledPower, HIGH);
               digitalWrite(ledStop, HIGH);
-              delay(500);
-              digitalWrite(ledStop, LOW);
-              digitalWrite(ledPower, LOW);
-              delay(500);
-            }
-            digitalWrite(ledPower, HIGH);
+            //  delay(500);
+            //  digitalWrite(ledStop, LOW);
+            //  digitalWrite(ledPower, LOW);
+            //delay(500);
+          // }
+            //digitalWrite(ledPower, HIGH);
           break;
 
           case 5:
+            if(systemPause == 0)
+            {
              Serial.println("Flush close written");
              logData[logDataCursor].eventCode = 0x52;
              logData[logDataCursor].eventTime = now();
@@ -989,6 +1094,9 @@ void loop() {
              logData[logDataCursor].data[9] = (unsigned char)(flowCounter % 256);
              logDataCursor++;
              solenoidClose();
+             }
+             else
+                 Serial.println("Pebble is paused");
              break;
 
           default:

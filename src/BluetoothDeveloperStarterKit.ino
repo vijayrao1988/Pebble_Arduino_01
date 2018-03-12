@@ -1020,17 +1020,12 @@ void loop() {
          switch(AttributeValue[0])
          {
           case 1:
-            if(systemPause == 0)
-            {
               Serial.println("Flush open written");
               flowCounter = 0;
               logData[logDataCursor].eventCode = 0x51;
               logData[logDataCursor].eventTime = now();
               logDataCursor++;
               solenoidOpen();
-            }
-            else
-                Serial.println("Pebble is paused");
           break;
 
           case 2:
@@ -1085,8 +1080,6 @@ void loop() {
           break;
 
           case 5:
-            if(systemPause == 0)
-            {
              Serial.println("Flush close written");
              logData[logDataCursor].eventCode = 0x52;
              logData[logDataCursor].eventTime = now();
@@ -1094,9 +1087,6 @@ void loop() {
              logData[logDataCursor].data[9] = (unsigned char)(flowCounter % 256);
              logDataCursor++;
              solenoidClose();
-             }
-             else
-                 Serial.println("Pebble is paused");
              break;
 
           default:

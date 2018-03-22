@@ -35,7 +35,7 @@ AlarmId id[32];
 static uint16_t volume[28];
 static uint16_t duration[28];
 static volatile uint16_t flowCounter = 0,countStop=0, countStart=0;
-static volatile uint8_t systemPause=0;
+static volatile uint8_t systemPause=0,systemStop=0;
 
 // BLE objects
 BLEPeripheral blePeripheral;
@@ -253,9 +253,10 @@ void beep() {
   delay(50);              // wait for a second
   digitalWrite(13, LOW);
   Alarm.timerOnce(10, debounce);
-  // begin advertising
+    // begin advertising
   blePeripheral.begin();
   Serial.println("advertising");
+
 }
 
 void count() {
@@ -796,6 +797,7 @@ void loop() {
   // listen for BLE peripherals to connect:
   BLECentral central = blePeripheral.central();
   time_t t;
+
   if(!central)
   {
     digitalWrite(ledPower, HIGH);
@@ -826,10 +828,7 @@ void loop() {
     //Recording log event sample.
     logData[logDataCursor].eventCode = 0x01;
     logData[logDataCursor].eventTime = now();
-    //centralAddress.getBytes(logData[logDataCursor].data, 12);
-    //String centralAddress = String(central.address());
-    //(central.address()).toCharArray(logData[logDataCursor].data, 10);
-    //strcpy(logData[logDataCursor].data, (central.address()));
+    
 
 //TODO:@Vijay: The following loop must convert the address string to numbers such that the 12 ascii characters representing the address must fit into 6 unsigned characters.
 
@@ -1021,11 +1020,30 @@ void loop() {
          {
           case 1:
               Serial.println("Flush open written");
+              if(systemStop==0)
+              {
               flowCounter = 0;
               logData[logDataCursor].eventCode = 0x51;
               logData[logDataCursor].eventTime = now();
               logDataCursor++;
               solenoidOpen();
+              if(systemPause==1)
+              {
+                uint8_t k;
+                for(k=0; k<5; k++)
+                {
+                    digitalWrite(ledPower, HIGH);
+                    digitalWrite(ledStop, HIGH);
+                    delay(500);
+                    digitalWrite(ledPower, LOW);
+                    digitalWrite(ledStop, LOW);
+                    delay(500);
+                 }
+                digitalWrite(ledPower, HIGH);
+              }
+            }
+            else
+              Serial.println("System stopped");
           break;
 
           case 2:
@@ -1035,10 +1053,12 @@ void loop() {
             logData[logDataCursor].eventTime = now();
             logDataCursor++;
             systemPause = 0;           //Pebble is unpaused
+            systemStop  = 0;          //Pebble is unstopped
           break;
 
           case 3:
             Serial.println("Stop written");
+            systemStop = 1;
             logData[logDataCursor].eventCode = 0x62;
             logData[logDataCursor].eventTime = now();
             logDataCursor++;
@@ -1049,44 +1069,61 @@ void loop() {
             }
             Serial.println("All Time points erased");
             digitalWrite(ledStart, LOW);
-            uint8_t m;
-            for(m=0; m<5; m++)
-            {
+
+            digitalWrite(ledPower, HIGH);
             digitalWrite(ledStop, HIGH);
-            delay(200);
-            digitalWrite(ledStop, LOW);
-            delay(200);
-           }
           break;
 
           case 4:
             Serial.println("Pause written");
+            if(systemStop==0){
             logData[logDataCursor].eventCode = 0x63;
             logData[logDataCursor].eventTime = now();
             logDataCursor++;
             systemPause = 1;
             Serial.println("Pebble paused ");
-            //uint8_t m;
-            //for(m=0; m<5; m++)
-            //{
-              digitalWrite(ledPower, HIGH);
-              digitalWrite(ledStop, HIGH);
-            //  delay(500);
-            //  digitalWrite(ledStop, LOW);
-            //  digitalWrite(ledPower, LOW);
-            //delay(500);
-          // }
-            //digitalWrite(ledPower, HIGH);
+            uint8_t m;
+            for(m=0; m<5; m++)
+            {
+                digitalWrite(ledPower, HIGH);
+                digitalWrite(ledStop, HIGH);
+                delay(500);
+                digitalWrite(ledPower, LOW);
+                digitalWrite(ledStop, LOW);
+                delay(500);
+             }
+            digitalWrite(ledPower, HIGH);
+             }
+             else
+               Serial.println("System stopped");
           break;
 
           case 5:
              Serial.println("Flush close written");
+             if(systemStop == 0){
              logData[logDataCursor].eventCode = 0x52;
              logData[logDataCursor].eventTime = now();
              logData[logDataCursor].data[8] = (unsigned char)(flowCounter/256);
              logData[logDataCursor].data[9] = (unsigned char)(flowCounter % 256);
              logDataCursor++;
              solenoidClose();
+             if(systemPause==1)
+             {
+               uint8_t k;
+               for(k=0; k<5; k++)
+               {
+                   digitalWrite(ledPower, HIGH);
+                   digitalWrite(ledStop, HIGH);
+                   delay(500);
+                   digitalWrite(ledPower, LOW);
+                   digitalWrite(ledStop, LOW);
+                   delay(500);
+                }
+               digitalWrite(ledPower, HIGH);
+              }
+            }
+             else
+               Serial.println("System stopped");
              break;
 
           default:

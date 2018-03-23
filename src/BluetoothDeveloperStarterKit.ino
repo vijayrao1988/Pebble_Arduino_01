@@ -828,7 +828,7 @@ void loop() {
     //Recording log event sample.
     logData[logDataCursor].eventCode = 0x01;
     logData[logDataCursor].eventTime = now();
-    
+
 
 //TODO:@Vijay: The following loop must convert the address string to numbers such that the 12 ascii characters representing the address must fit into 6 unsigned characters.
 
@@ -1059,6 +1059,7 @@ void loop() {
           case 3:
             Serial.println("Stop written");
             systemStop = 1;
+            systemPause = 0;
             logData[logDataCursor].eventCode = 0x62;
             logData[logDataCursor].eventTime = now();
             logDataCursor++;
@@ -1173,6 +1174,8 @@ void loop() {
          Serial.print(",");
          Serial.print(AttributeValue[8], DEC);
          Serial.println(".");*/
+         systemStop = 0;              //start system on time point written
+         digitalWrite(ledStop, LOW);  //ledStop off
 
          if(AttributeValue[0] == 0)
          {
